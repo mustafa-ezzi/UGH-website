@@ -1,0 +1,254 @@
+/* Dark cinematic hero (restored) */
+
+.cinematic-hero {
+  position: relative;
+  background: var(--ugh-void);
+  color: var(--ugh-text-on-dark);
+}
+
+.cinematic-hero__pin {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--ugh-void);
+}
+
+.cinematic-hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  cursor: crosshair;
+}
+
+.cinematic-hero__canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.cinematic-hero__fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(196, 92, 38, 0.22), transparent 55%),
+    var(--ugh-void);
+}
+
+.cinematic-hero__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Soft edge only — keep center particles fully visible */
+  background:
+    linear-gradient(180deg, rgba(10, 9, 8, 0.35), transparent 18%),
+    linear-gradient(0deg, rgba(10, 9, 8, 0.45), transparent 22%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(10, 9, 8, 0.4) 100%);
+}
+
+.cinematic-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--ugh-pad);
+  pointer-events: none;
+}
+
+/* Taheri-style: text floats over particles — no panel, no blur plate */
+.cinematic-hero__copy {
+  position: relative;
+  max-width: min(44rem, 92vw);
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.cinematic-hero__copy::before {
+  display: none;
+}
+
+.cinematic-hero__overlay a,
+.cinematic-hero__overlay .btn-ember {
+  pointer-events: auto;
+}
+
+.cinematic-hero__eyebrow {
+  display: none;
+}
+
+.cinematic-hero__title {
+  font-family: var(--ugh-font-serif);
+  font-size: clamp(3.4rem, 11vw, 6.5rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin: 0 0 1rem;
+  color: #ffffff;
+  text-shadow: none;
+  animation: hero-title-in 0.55s ease;
+}
+
+.cinematic-hero__body,
+.cinematic-hero__tagline {
+  max-width: 36rem;
+  margin-inline: auto;
+  font-family: var(--ugh-font-body);
+  font-size: clamp(0.72rem, 1.6vw, 0.85rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.55;
+  min-height: 0;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: none;
+  animation: hero-title-in 0.55s ease;
+}
+
+.cinematic-hero__support {
+  max-width: 32rem;
+  font-family: var(--ugh-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.55;
+  margin: 0.75rem auto 1.75rem;
+}
+
+.cinematic-hero__cta {
+  margin-top: 1.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #fff;
+  animation: hero-title-in 0.45s ease;
+}
+
+.cinematic-hero__cta:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: none;
+}
+
+.cinematic-hero__scroll {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ugh-brass);
+}
+
+.cinematic-hero__scroll-line {
+  width: 1px;
+  height: 3rem;
+  background: linear-gradient(to bottom, var(--ugh-brass), transparent);
+  animation: scroll-pulse 2.2s ease-in-out infinite;
+}
+
+.cinematic-hero__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cinematic-hero__progress-bar {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--ugh-ember), var(--ugh-brass));
+  transform: scaleX(0);
+}
+
+.cinematic-hero__handoff {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 3;
+  margin: 0;
+  opacity: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ugh-chrome);
+  pointer-events: none;
+}
+
+.cinematic-hero--static {
+  min-height: calc(100vh - var(--ugh-header-h));
+  min-height: calc(100dvh - var(--ugh-header-h));
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--ugh-void);
+}
+
+.cinematic-hero__static-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(196, 92, 38, 0.2), transparent 55%),
+    linear-gradient(180deg, var(--ugh-void), var(--ugh-ink));
+}
+
+.cinematic-hero__overlay--static {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes hero-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleY(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-hero__title,
+  .cinematic-hero__body,
+  .cinematic-hero__cta {
+    animation: none;
+  }
+
+  .cinematic-hero__scroll-line {
+    animation: none;
+  }
+}
+
+.home-section--dark.home-section--after-hero {
+  position: relative;
+  z-index: 1;
+}

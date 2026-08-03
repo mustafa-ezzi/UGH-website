@@ -1,0 +1,317 @@
+/* Kitchen Line–inspired post-hero: carousel + sticky background story */
+
+.kl-carousel {
+  position: relative;
+  min-height: 88vh;
+  min-height: 88dvh;
+  display: grid;
+  place-items: end stretch;
+  overflow: hidden;
+  color: #fff8f0;
+  background: #141210;
+}
+
+.kl-carousel__slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kl-carousel__slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.kl-carousel__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(10, 9, 8, 0.72) 0%, rgba(10, 9, 8, 0.35) 55%, rgba(10, 9, 8, 0.2) 100%),
+    linear-gradient(0deg, rgba(10, 9, 8, 0.55), transparent 45%);
+  pointer-events: none;
+}
+
+.kl-carousel__content {
+  position: relative;
+  z-index: 3;
+  padding-block: clamp(4rem, 12vh, 7rem);
+  max-width: 40rem;
+  margin-right: auto;
+}
+
+.kl-carousel__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ugh-flame);
+  margin-bottom: 0.85rem;
+}
+
+.kl-carousel__title {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.85rem;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+
+.kl-carousel__body {
+  color: #e4ddd3;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 28rem;
+}
+
+.kl-carousel__controls {
+  position: absolute;
+  right: var(--ugh-pad);
+  bottom: 2rem;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.kl-carousel__controls > button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  padding: 0.45rem 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.kl-carousel__dots {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.kl-carousel__dots button {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.kl-carousel__dots button.is-active {
+  background: var(--ugh-ember);
+}
+
+/* Sticky scroll-reveal backgrounds */
+.kl-story {
+  position: relative;
+  height: calc(var(--kl-slides, 4) * 100vh);
+  height: calc(var(--kl-slides, 4) * 100dvh);
+  background: #0a0908;
+}
+
+.kl-story__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+}
+
+.kl-story__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kl-story__bg.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.kl-story__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(8, 7, 6, 0.78) 0%, rgba(8, 7, 6, 0.4) 50%, rgba(8, 7, 6, 0.25) 100%),
+    linear-gradient(0deg, rgba(8, 7, 6, 0.55), transparent 40%);
+}
+
+.kl-story__content {
+  position: relative;
+  z-index: 3;
+  padding-block: clamp(3.5rem, 10vh, 6rem);
+  max-width: 38rem;
+  color: #fff8f0;
+}
+
+.kl-story__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ugh-flame);
+  margin-bottom: 0.75rem;
+}
+
+.kl-story__title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-bottom: 0.85rem;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+  animation: kl-fade-up 0.45s ease;
+}
+
+.kl-story__body {
+  color: #e4ddd3;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 28rem;
+  animation: kl-fade-up 0.45s ease;
+}
+
+.kl-story__dots {
+  position: absolute;
+  right: var(--ugh-pad);
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 4;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.kl-story__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.kl-story__dot.is-active {
+  background: var(--ugh-ember);
+  box-shadow: 0 0 0 4px rgba(196, 92, 38, 0.25);
+}
+
+@keyframes kl-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kl-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: clamp(3rem, 7vw, 5rem) var(--ugh-pad);
+  background: color-mix(in srgb, var(--ugh-mist) 96%, white);
+  color: var(--ugh-text-on-light);
+}
+
+.kl-pillars article {
+  padding: 1.5rem 0.25rem;
+  border-top: 1px solid var(--ugh-hairline-dark);
+}
+
+.kl-pillars h3 {
+  font-size: 1.35rem;
+  margin: 0.75rem 0 0.65rem;
+}
+
+.kl-pillars p {
+  color: var(--ugh-text-muted-light);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.kl-quote {
+  padding: clamp(4rem, 10vw, 7rem) var(--ugh-pad);
+  text-align: center;
+  background: var(--ugh-ink);
+  color: var(--ugh-text-on-dark);
+}
+
+.kl-quote h2 {
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  max-width: 18ch;
+  margin-inline: auto;
+  line-height: 1.2;
+}
+
+/* Kitchen Line fixed-background quote (scroll continues, image stays) */
+.kl-fixed-quote {
+  position: relative;
+  height: 140vh;
+  height: 140dvh;
+  background: #0a0908;
+}
+
+.kl-fixed-quote__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.kl-fixed-quote__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+}
+
+.kl-fixed-quote__wash {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 9, 8, 0.48);
+}
+
+.kl-fixed-quote__title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0 var(--ugh-pad);
+  text-align: center;
+  font-size: clamp(1.85rem, 4.8vw, 3.1rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 900px) {
+  .kl-pillars {
+    grid-template-columns: 1fr;
+  }
+
+  .kl-carousel__controls {
+    right: auto;
+    left: var(--ugh-pad);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-carousel__slide,
+  .kl-story__bg,
+  .kl-story__title,
+  .kl-story__body {
+    transition: none;
+    animation: none;
+  }
+}

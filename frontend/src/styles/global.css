@@ -1,0 +1,174 @@
+/* UGH Appliances — design tokens & base (Phase 0) */
+
+@font-face {
+  font-family: "Instrument Sans";
+  src: local("Instrument Sans"), local("Segoe UI"), local("Helvetica Neue");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: local("Satoshi"), local("Avenir Next"), local("Segoe UI");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  /* Surfaces */
+  --ugh-void: #0a0908;
+  --ugh-ink: #141210;
+  --ugh-stone: #1c1a17;
+  --ugh-mist: #f4f1ec;
+  --ugh-paper: #ebe6df;
+
+  /* Metals & accents */
+  --ugh-steel: #8a9199;
+  --ugh-chrome: #c5ccd3;
+  --ugh-ember: #c45c26;
+  --ugh-brass: #b8956c;
+  --ugh-flame: #e8a05c;
+
+  /* Text */
+  --ugh-text-on-dark: #f7f4ef;
+  --ugh-text-muted-dark: #a39e96;
+  --ugh-text-on-light: #1a1714;
+  --ugh-text-muted-light: #5c574f;
+
+  /* Lines */
+  --ugh-hairline: rgba(255, 255, 255, 0.12);
+  --ugh-hairline-dark: rgba(20, 18, 16, 0.12);
+
+  /* Type */
+  --ugh-font-display: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+  --ugh-font-body: "Outfit", "Instrument Sans", "Segoe UI", "Helvetica Neue", sans-serif;
+  --ugh-font-serif: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+
+  /* Layout */
+  --ugh-header-h: 4.25rem;
+  --ugh-pad: clamp(1.25rem, 4vw, 3.5rem);
+  --ugh-max: 72rem;
+
+  color-scheme: dark light;
+  font-family: var(--ugh-font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--ugh-void);
+  color: var(--ugh-text-on-dark);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--ugh-font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  background: var(--ugh-ember);
+  color: var(--ugh-text-on-dark);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .motion-safe-only {
+    display: none !important;
+  }
+}
+
+.u-container {
+  width: min(100% - (var(--ugh-pad) * 2), var(--ugh-max));
+  margin-inline: auto;
+}
+
+.u-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ugh-brass);
+}
+
+.u-muted {
+  color: var(--ugh-text-muted-dark);
+}
