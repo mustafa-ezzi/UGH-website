@@ -56,7 +56,7 @@ export function HeroScene({ className }: HeroSceneProps) {
         dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.45, 5.4], fov: 42, near: 0.1, far: 40 }}
-        style={{ width: '100%', height: '100%', touchAction: 'none' }}
+        style={{ width: '100%', height: '100%', touchAction: 'pan-y' }}
         onCreated={({ raycaster }) => {
           raycaster.params.Points = { threshold: 0.3 }
         }}

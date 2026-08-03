@@ -10,13 +10,28 @@ type SmoothScrollProviderProps = {
   children: ReactNode
 }
 
+function isTouchDevice() {
+  if (typeof window === 'undefined') return false
+  return (
+    window.matchMedia('(hover: none), (pointer: coarse)').matches ||
+    navigator.maxTouchPoints > 0
+  )
+}
+
 export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
   useEffect(() => {
-    if (prefersReducedMotion()) return
+    // Mobile/touch: keep native scrolling. Lenis + pinned ScrollTriggers
+    // often eat touch gestures and feel broken on phones.
+    if (prefersReducedMotion() || isTouchDevice()) {
+      ScrollTrigger.config({ ignoreMobileResize: true })
+      ScrollTrigger.refresh()
+      return
+    }
 
     const lenis = new Lenis({
       duration: 1.35,
       smoothWheel: true,
+      syncTouch: false,
       touchMultiplier: 1,
       wheelMultiplier: 0.9,
     })

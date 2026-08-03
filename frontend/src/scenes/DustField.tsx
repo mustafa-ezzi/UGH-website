@@ -156,6 +156,8 @@ export function DustField({ count }: DustFieldProps) {
   })
 
   function setCursor(event: ThreeEvent<PointerEvent>, active: number) {
+    // Touch scrolls the page — don't capture particle interaction on coarse pointers
+    if (event.pointerType === 'touch') return
     cursorRef.current.x = event.point.x
     cursorRef.current.y = event.point.y
     cursorRef.current.z = event.point.z
@@ -167,14 +169,17 @@ export function DustField({ count }: DustFieldProps) {
       <mesh
         position={[0, 0, 0.35]}
         onPointerMove={(e) => {
+          if (e.pointerType === 'touch') return
           e.stopPropagation()
           setCursor(e, 1)
         }}
         onPointerDown={(e) => {
+          if (e.pointerType === 'touch') return
           e.stopPropagation()
           setCursor(e, 1)
         }}
         onPointerUp={(e) => {
+          if (e.pointerType === 'touch') return
           e.stopPropagation()
           cursorRef.current.targetActive = 0.35
         }}
