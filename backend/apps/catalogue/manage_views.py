@@ -25,6 +25,7 @@ class ManageDashboardView(APIView):
     permission_classes = [IsStaffUser]
 
     def get(self, request):
+        recent = Enquiry.objects.select_related("product").order_by("-created_at")[:6]
         return Response(
             {
                 "products_total": Product.objects.count(),
@@ -34,6 +35,9 @@ class ManageDashboardView(APIView):
                 "enquiries_total": Enquiry.objects.count(),
                 "categories": Category.objects.filter(is_active=True).count(),
                 "brands": Brand.objects.filter(is_active=True).count(),
+                "recent_enquiries": ManageEnquirySerializer(
+                    recent, many=True, context={"request": request}
+                ).data,
             }
         )
 
@@ -41,6 +45,7 @@ class ManageDashboardView(APIView):
 class ManageBrandViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffUser]
     serializer_class = ManageBrandSerializer
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     queryset = Brand.objects.all()
     pagination_class = None
     filter_backends = [SearchFilter, OrderingFilter]
@@ -51,6 +56,7 @@ class ManageBrandViewSet(viewsets.ModelViewSet):
 class ManageCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffUser]
     serializer_class = ManageCategorySerializer
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
     queryset = Category.objects.all()
     pagination_class = None
     filter_backends = [SearchFilter, OrderingFilter]
@@ -77,6 +83,22 @@ class ManageProductViewSet(viewsets.ModelViewSet):
             .annotate(enquiry_count=Count("enquiries"))
         )
 
+    @action(detail=False, methods=["post"])
+    def bulk(self, request):
+        ids = request.data.get("ids") or []
+        if not isinstance(ids, list) or not ids:
+            return Response({"detail": "Provide ids: number[]."}, status=status.HTTP_400_BAD_REQUEST)
+        qs = Product.objects.filter(id__in=ids)
+        updates = {}
+        if "is_published" in request.data:
+            updates["is_published"] = bool(request.data["is_published"])
+        if "is_featured" in request.data:
+            updates["is_featured"] = bool(request.data["is_featured"])
+        if not updates:
+            return Response({"detail": "Nothing to update."}, status=status.HTTP_400_BAD_REQUEST)
+        updated = qs.update(**updates)
+        return Response({"updated": updated})
+
     @action(detail=True, methods=["post"], parser_classes=[MultiPartParser, FormParser])
     def images(self, request, pk=None):
         product = self.get_object()
@@ -84,7 +106,7 @@ class ManageProductViewSet(viewsets.ModelViewSet):
             data={
                 "image": request.data.get("image"),
                 "alt_text": request.data.get("alt_text", ""),
-                "sort_order": request.data.get("sort_order", 0),
+                "sort_order": request.data.get("sort_order", product.images.count()),
             },
             context={"request": request},
         )
@@ -111,9 +133,11 @@ class ManageProductViewSet(viewsets.ModelViewSet):
         return Response(self.get_serializer(product).data)
 
 
-class ManageProductImageDestroyView(generics.DestroyAPIView):
+class ManageProductImageView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsStaffUser]
+    serializer_class = ManageProductImageSerializer
     queryset = ProductImage.objects.all()
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
 
 class ManageEnquiryViewSet(
@@ -131,6 +155,15 @@ class ManageEnquiryViewSet(
 
     def get_queryset(self):
         return Enquiry.objects.select_related("product").all()
+
+    @action(detail=False, methods=["post"])
+    def bulk(self, request):
+        ids = request.data.get("ids") or []
+        if not isinstance(ids, list) or not ids:
+            return Response({"detail": "Provide ids: number[]."}, status=status.HTTP_400_BAD_REQUEST)
+        is_handled = bool(request.data.get("is_handled", True))
+        updated = Enquiry.objects.filter(id__in=ids).update(is_handled=is_handled)
+        return Response({"updated": updated})
 
 
 class ManageSiteSettingView(generics.RetrieveUpdateAPIView):

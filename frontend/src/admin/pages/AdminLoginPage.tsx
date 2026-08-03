@@ -34,10 +34,13 @@ export function AdminLoginPage() {
 
   return (
     <div className="manage-login">
+      <div className="manage-login__glow" aria-hidden="true" />
       <form className="manage-login__card" onSubmit={onSubmit}>
         <p className="manage-brand__eyebrow">UGH Appliances</p>
         <h1>Staff sign in</h1>
-        <p className="manage-login__hint">Catalogue management for your team — not the public site.</p>
+        <p className="manage-login__hint">
+          Manage catalogue, enquiries, and homepage content — not visible to shoppers.
+        </p>
         {error ? <p className="manage-alert">{error}</p> : null}
         <label className="manage-field">
           <span>Username</span>
@@ -46,6 +49,7 @@ export function AdminLoginPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            autoFocus
           />
         </label>
         <label className="manage-field">
@@ -58,9 +62,12 @@ export function AdminLoginPage() {
             required
           />
         </label>
-        <button className="manage-btn manage-btn--primary" type="submit" disabled={busy}>
+        <button className="manage-btn manage-btn--primary manage-btn--block" type="submit" disabled={busy}>
           {busy ? 'Signing in…' : 'Enter manage panel'}
         </button>
+        <a className="manage-storefront-link" href="/">
+          ← Back to storefront
+        </a>
       </form>
     </div>
   )

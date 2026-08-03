@@ -62,7 +62,7 @@ export function HeroScene({ className }: HeroSceneProps) {
         }}
       >
         <color attach="background" args={['#0a0908']} />
-        <fog attach="fog" args={['#0a0908', 6, 16]} />
+        <fog attach="fog" args={['#0a0908', 7.5, 18]} />
         <Suspense fallback={null}>
           <CameraRig />
           <SceneLights />

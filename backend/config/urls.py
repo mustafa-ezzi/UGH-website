@@ -1,13 +1,20 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 
 admin.site.site_header = "UGH Appliances Admin"
 admin.site.site_title = "UGH Appliances"
 admin.site.index_title = "Catalogue & content"
 
+
+def health(_request):
+    return JsonResponse({"status": "ok", "service": "ugh-appliances-api"})
+
+
 urlpatterns = [
+    path("", health, name="health"),
     path("admin/", admin.site.urls),
     path("api/manage/", include("apps.catalogue.manage_urls")),
     path("api/", include("apps.catalogue.urls")),

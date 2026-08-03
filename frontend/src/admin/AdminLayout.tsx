@@ -5,6 +5,8 @@ import { useAuthStore } from './authStore'
 const links = [
   { to: '/manage', end: true, label: 'Overview' },
   { to: '/manage/products', end: false, label: 'Products' },
+  { to: '/manage/categories', end: false, label: 'Categories' },
+  { to: '/manage/brands', end: false, label: 'Brands' },
   { to: '/manage/enquiries', end: false, label: 'Enquiries' },
   { to: '/manage/settings', end: false, label: 'Site settings' },
 ]
@@ -24,12 +26,16 @@ export function AdminLayout() {
     navigate('/manage/login', { replace: true })
   }
 
+  const displayName =
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.username || 'Staff'
+
   return (
     <div className="manage-shell">
       <aside className="manage-sidebar">
         <div className="manage-brand">
           <p className="manage-brand__eyebrow">UGH Appliances</p>
           <h1>Manage</h1>
+          <p className="manage-brand__sub">Catalogue & content</p>
         </div>
         <nav className="manage-nav" aria-label="Manage">
           {links.map((link) => (
@@ -46,12 +52,22 @@ export function AdminLayout() {
           ))}
         </nav>
         <div className="manage-sidebar__foot">
-          <p className="manage-user">{user?.username ?? 'Staff'}</p>
+          <div className="manage-user-card">
+            <span className="manage-user-card__avatar" aria-hidden="true">
+              {(user?.username?.[0] ?? 'U').toUpperCase()}
+            </span>
+            <div>
+              <p className="manage-user">{displayName}</p>
+              <p className="manage-user-card__role">
+                {user?.is_superuser ? 'Superadmin' : 'Editor'}
+              </p>
+            </div>
+          </div>
           <button type="button" className="manage-btn manage-btn--ghost" onClick={handleLogout}>
             Sign out
           </button>
           <a className="manage-storefront-link" href="/" target="_blank" rel="noreferrer">
-            View storefront
+            Open storefront ↗
           </a>
         </div>
       </aside>

@@ -6,7 +6,7 @@ from apps.catalogue.manage_views import (
     ManageCategoryViewSet,
     ManageDashboardView,
     ManageEnquiryViewSet,
-    ManageProductImageDestroyView,
+    ManageProductImageView,
     ManageProductViewSet,
     ManageSiteSettingView,
 )
@@ -26,8 +26,8 @@ urlpatterns = [
     path("settings/", ManageSiteSettingView.as_view(), name="manage-settings"),
     path(
         "product-images/<int:pk>/",
-        ManageProductImageDestroyView.as_view(),
-        name="manage-product-image-delete",
+        ManageProductImageView.as_view(),
+        name="manage-product-image",
     ),
     path("", include(router.urls)),
 ]

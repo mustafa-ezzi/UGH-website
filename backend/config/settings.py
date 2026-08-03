@@ -10,10 +10,40 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "insecure-dev-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes"}
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if host.strip()
+
+def _split_env_list(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+# Hosts: explicit env + Railway public domain (avoids DisallowedHost 400)
+_allowed = _split_env_list(
+    os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+)
+_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip()
+if _railway_domain and _railway_domain not in _allowed:
+    _allowed.append(_railway_domain)
+# Common Railway suffix — safe when DEBUG is off on Railway only via env below
+if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RAILWAY_PROJECT_ID"):
+    if ".up.railway.app" not in " ".join(_allowed):
+        _allowed.append(".up.railway.app")
+ALLOWED_HOSTS = _allowed or ["*"]
+
+CSRF_TRUSTED_ORIGINS = _split_env_list(
+    os.getenv(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        ",".join(
+            origin
+            for origin in [
+                f"https://{_railway_domain}" if _railway_domain else "",
+                "https://*.up.railway.app",
+            ]
+            if origin
+        ),
+    )
+)
+# Ensure https scheme entries Django accepts
+CSRF_TRUSTED_ORIGINS = [
+    o if o.startswith("http") else f"https://{o}" for o in CSRF_TRUSTED_ORIGINS
 ]
 
 INSTALLED_APPS = [
@@ -155,7 +185,9 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 24,
 }
 
-CORS_ALLOW_CREDENTIALS = True
+# Trust Railway / reverse-proxy HTTPS
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 # Image upload limits (bytes) — 5 MB
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024

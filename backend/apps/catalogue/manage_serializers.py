@@ -6,6 +6,8 @@ from apps.enquiries.models import Enquiry
 
 
 class ManageBrandSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Brand
         fields = (
@@ -13,13 +15,27 @@ class ManageBrandSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "logo",
+            "logo_url",
             "description",
             "sort_order",
             "is_active",
         )
+        extra_kwargs = {"logo": {"write_only": True, "required": False}}
+
+    def get_logo_url(self, obj):
+        if not obj.logo:
+            return None
+        request = self.context.get("request")
+        url = obj.logo.url
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
 
 
 class ManageCategorySerializer(serializers.ModelSerializer):
+    hero_image_url = serializers.SerializerMethodField()
+    parent_name = serializers.CharField(source="parent.name", read_only=True, default=None)
+
     class Meta:
         model = Category
         fields = (
@@ -27,11 +43,23 @@ class ManageCategorySerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "parent",
+            "parent_name",
             "hero_image",
+            "hero_image_url",
             "description",
             "sort_order",
             "is_active",
         )
+        extra_kwargs = {"hero_image": {"write_only": True, "required": False}}
+
+    def get_hero_image_url(self, obj):
+        if not obj.hero_image:
+            return None
+        request = self.context.get("request")
+        url = obj.hero_image.url
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
 
 
 class ManageProductImageSerializer(serializers.ModelSerializer):

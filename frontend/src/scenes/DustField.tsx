@@ -51,12 +51,19 @@ export function DustField({ count }: DustFieldProps) {
     z: 0,
     active: 0,
     targetActive: 0,
-    /** Ignore particle drag while finger is clearly scrolling vertically */
+    /** Finger / pointer velocity in world space */
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    /** True only for clear full-page vertical scrolls */
     scrolling: false,
+    isTouch: false,
   })
-  const touchStartRef = useRef({ x: 0, y: 0 })
+  const touchStartRef = useRef({ x: 0, y: 0, t: 0 })
+  const lastTouchRef = useRef({ x: 0, y: 0, t: 0, wx: 0, wy: 0, wz: 0 })
   const dispRef = useRef<Float32Array>(new Float32Array(count * 3))
   const velRef = useRef<Float32Array>(new Float32Array(count * 3))
+  const interactVelRef = useRef<Float32Array>(new Float32Array(count * 3))
   const { gl, camera } = useThree()
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
   const hitPlane = useMemo(
@@ -102,20 +109,21 @@ export function DustField({ count }: DustFieldProps) {
       const s2 = seeds[i * 4 + 2]
       const s3 = seeds[i * 4 + 3]
 
-      // Wide messy cloud
-      const cr = 0.6 + s0 * 8.5
+      // Dense crowded cloud — bias toward center, fill the hero tightly
+      const dens = Math.pow(s0, 0.55)
+      const cr = 0.25 + dens * 4.4 + s3 * 1.1
       const cTheta = s1 * Math.PI * 2
-      const cPhi = (s2 - 0.5) * Math.PI
+      const cPhi = (s2 - 0.5) * Math.PI * 0.95
       cloud[i3] = Math.cos(cTheta) * Math.cos(cPhi) * cr
-      cloud[i3 + 1] = Math.sin(cPhi) * cr * 0.95 + (s3 - 0.5) * 2.2
-      cloud[i3 + 2] = Math.sin(cTheta) * Math.cos(cPhi) * cr * 0.85
+      cloud[i3 + 1] = Math.sin(cPhi) * cr * 0.88 + (s3 - 0.5) * 0.9
+      cloud[i3 + 2] = Math.sin(cTheta) * Math.cos(cPhi) * cr * 0.92
 
-      // Extra scatter layer (used while jumbling)
-      const sr2 = 2 + s1 * 6.5
+      // Extra scatter layer (used while jumbling) — also denser core
+      const sr2 = 0.8 + dens * 3.8 + s1 * 1.2
       const st = s2 * Math.PI * 2
-      scatter[i3] = Math.cos(st + s0 * 9) * sr2 * (0.5 + s3)
-      scatter[i3 + 1] = (s0 - 0.5) * 8.5
-      scatter[i3 + 2] = Math.sin(st * 1.3 - s1 * 5) * sr2 * (0.4 + s2)
+      scatter[i3] = Math.cos(st + s0 * 9) * sr2 * (0.55 + s3 * 0.5)
+      scatter[i3 + 1] = (s0 - 0.5) * 4.8
+      scatter[i3 + 2] = Math.sin(st * 1.3 - s1 * 5) * sr2 * (0.5 + s2 * 0.45)
 
       // Warped pebble / broken sphere
       const phi = Math.acos(2 * s0 - 1)
@@ -188,45 +196,86 @@ export function DustField({ count }: DustFieldProps) {
     ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1
     raycaster.setFromCamera(ndc, camera)
     if (raycaster.ray.intersectPlane(hitPlane, hitPoint)) {
-      cursorRef.current.x = hitPoint.x
-      cursorRef.current.y = hitPoint.y
-      cursorRef.current.z = hitPoint.z
+      return { x: hitPoint.x, y: hitPoint.y, z: hitPoint.z }
     }
+    return null
   }
 
-  // Native touch bridge — works even when R3F pointer events are flaky on mobile.
-  // Does NOT preventDefault, so vertical pan-y scrolling still works.
+  // Native touch bridge — physical parting + wake; page scroll only on clear vertical flicks
   useEffect(() => {
     const el = gl.domElement
 
     const onTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0]
       if (!touch) return
-      touchStartRef.current = { x: touch.clientX, y: touch.clientY }
+      const now = performance.now()
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY, t: now }
+      const hit = projectPointer(touch.clientX, touch.clientY)
+      if (hit) {
+        cursorRef.current.x = hit.x
+        cursorRef.current.y = hit.y
+        cursorRef.current.z = hit.z
+        lastTouchRef.current = { x: touch.clientX, y: touch.clientY, t: now, wx: hit.x, wy: hit.y, wz: hit.z }
+      }
       cursorRef.current.scrolling = false
-      projectPointer(touch.clientX, touch.clientY)
+      cursorRef.current.isTouch = true
+      cursorRef.current.vx = 0
+      cursorRef.current.vy = 0
+      cursorRef.current.vz = 0
       cursorRef.current.targetActive = 1
+      cursorRef.current.active = Math.max(cursorRef.current.active, 0.85)
     }
 
     const onTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0]
       if (!touch) return
+      const now = performance.now()
       const dx = touch.clientX - touchStartRef.current.x
       const dy = touch.clientY - touchStartRef.current.y
-      // Clear vertical scroll intent → ease off particle push so page can move
-      if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx) * 1.15) {
+      const absDx = Math.abs(dx)
+      const absDy = Math.abs(dy)
+
+      // Only yield to page scroll on a decisive vertical flick
+      const isPageScroll = absDy > 48 && absDy > absDx * 1.6
+      if (isPageScroll) {
         cursorRef.current.scrolling = true
-        cursorRef.current.targetActive = 0.12
-      } else {
-        cursorRef.current.scrolling = false
-        cursorRef.current.targetActive = 1
-        projectPointer(touch.clientX, touch.clientY)
+        cursorRef.current.targetActive = 0.2
+        return
+      }
+
+      cursorRef.current.scrolling = false
+      cursorRef.current.targetActive = 1
+      cursorRef.current.isTouch = true
+
+      const hit = projectPointer(touch.clientX, touch.clientY)
+      if (!hit) return
+
+      const dtMs = Math.max(8, now - lastTouchRef.current.t)
+      const inv = 1000 / dtMs
+      cursorRef.current.vx = (hit.x - lastTouchRef.current.wx) * inv
+      cursorRef.current.vy = (hit.y - lastTouchRef.current.wy) * inv
+      cursorRef.current.vz = (hit.z - lastTouchRef.current.wz) * inv
+      cursorRef.current.x = hit.x
+      cursorRef.current.y = hit.y
+      cursorRef.current.z = hit.z
+      lastTouchRef.current = {
+        x: touch.clientX,
+        y: touch.clientY,
+        t: now,
+        wx: hit.x,
+        wy: hit.y,
+        wz: hit.z,
       }
     }
 
     const onTouchEnd = () => {
+      // Soft linger — dust settles back after the finger lifts
       cursorRef.current.targetActive = 0
       cursorRef.current.scrolling = false
+      cursorRef.current.isTouch = false
+      cursorRef.current.vx *= 0.35
+      cursorRef.current.vy *= 0.35
+      cursorRef.current.vz *= 0.35
     }
 
     el.addEventListener('touchstart', onTouchStart, { passive: true })
@@ -283,17 +332,29 @@ export function DustField({ count }: DustFieldProps) {
     const wScatter = jumble * (0.35 + blast * 0.55) * (1 - wJewel * 0.7)
     const wCloud = Math.max(0, 1 - formSum - wScatter * 0.5) * (1 - blast * 0.25)
 
+    const interactVel = interactVelRef.current
+
     cursorRef.current.active = lerp(
       cursorRef.current.active,
       cursorRef.current.targetActive,
-      1 - Math.exp(-dt * 8),
+      1 - Math.exp(-dt * (cursorRef.current.isTouch ? 14 : 8)),
     )
+    // Decay finger velocity when not moving
+    cursorRef.current.vx *= Math.exp(-dt * 6)
+    cursorRef.current.vy *= Math.exp(-dt * 6)
+    cursorRef.current.vz *= Math.exp(-dt * 6)
+
     const cx = cursorRef.current.x
     const cy = cursorRef.current.y
     const cz = cursorRef.current.z
     const influence = cursorRef.current.active
-    const radiusInfluence = 2.1
-    const partStrength = 0.85
+    const touchBoost = cursorRef.current.isTouch ? 1.35 : 1
+    const radiusInfluence = (cursorRef.current.isTouch ? 2.85 : 2.15) * touchBoost
+    const partStrength = (cursorRef.current.isTouch ? 1.45 : 0.95) * touchBoost
+    const wake = Math.min(
+      2.4,
+      Math.hypot(cursorRef.current.vx, cursorRef.current.vy, cursorRef.current.vz) * 0.12,
+    )
 
     // Laggy follow while jumbling = messier trails
     const follow = 1 - Math.exp(-dt * (2.6 + formSum * 2.2 - jumble * 1.1))
@@ -384,28 +445,50 @@ export function DustField({ count }: DustFieldProps) {
         vel[i3 + 2] *= Math.exp(-dt * 5)
       }
 
-      // Cursor / finger parting
+      // Cursor / finger parting — soft fluid repulsion + swipe wake
       let dx = 0
       let dy = 0
       let dz = 0
       if (influence > 0.01) {
-        const ox = tx + disp[i3] - cx
-        const oy = ty + disp[i3 + 1] - cy
-        const oz = tz + disp[i3 + 2] - cz
+        const ox = arr[i3] - cx
+        const oy = arr[i3 + 1] - cy
+        const oz = arr[i3 + 2] - cz
         const dist = Math.sqrt(ox * ox + oy * oy + oz * oz) + 0.001
         if (dist < radiusInfluence) {
           const fall = 1 - dist / radiusInfluence
-          const push = fall * fall * partStrength * influence
-          dx = (ox / dist) * push
-          dy = (oy / dist) * push
-          dz = (oz / dist) * push
+          const soft = fall * fall * (0.35 + fall * 0.65)
+          const push = soft * partStrength * influence
+          const nx = ox / dist
+          const ny = oy / dist
+          const nz = oz / dist
+          dx = nx * push
+          dy = ny * push
+          dz = nz * push
+
+          // Swipe wake: drag nearby dust along finger motion
+          if (wake > 0.02) {
+            const wakePush = soft * wake * influence * 0.55
+            dx += cursorRef.current.vx * wakePush * 0.08
+            dy += cursorRef.current.vy * wakePush * 0.08
+            dz += cursorRef.current.vz * wakePush * 0.08
+          }
+
+          // Impulse into interaction velocity for springy feel
+          interactVel[i3] += (dx - disp[i3]) * dt * (cursorRef.current.isTouch ? 28 : 18)
+          interactVel[i3 + 1] += (dy - disp[i3 + 1]) * dt * (cursorRef.current.isTouch ? 28 : 18)
+          interactVel[i3 + 2] += (dz - disp[i3 + 2]) * dt * (cursorRef.current.isTouch ? 28 : 18)
         }
       }
 
-      const smooth = 1 - Math.exp(-dt * 10)
-      disp[i3] = lerp(disp[i3], dx, smooth)
-      disp[i3 + 1] = lerp(disp[i3 + 1], dy, smooth)
-      disp[i3 + 2] = lerp(disp[i3 + 2], dz, smooth)
+      // Critically damped return — quick part, soft settle
+      interactVel[i3] *= Math.exp(-dt * 7.5)
+      interactVel[i3 + 1] *= Math.exp(-dt * 7.5)
+      interactVel[i3 + 2] *= Math.exp(-dt * 7.5)
+
+      const smooth = 1 - Math.exp(-dt * (cursorRef.current.isTouch ? 16 : 11))
+      disp[i3] = lerp(disp[i3], dx, smooth) + interactVel[i3] * dt
+      disp[i3 + 1] = lerp(disp[i3 + 1], dy, smooth) + interactVel[i3 + 1] * dt
+      disp[i3 + 2] = lerp(disp[i3 + 2], dz, smooth) + interactVel[i3 + 2] * dt
 
       const blend = blast > 0.18 ? blastFollow : follow
       arr[i3] = lerp(arr[i3], tx + disp[i3] + vel[i3] * 0.12, blend)
@@ -416,8 +499,8 @@ export function DustField({ count }: DustFieldProps) {
     pos.needsUpdate = true
 
     const mat = points.material as THREE.PointsMaterial
-    mat.size = 0.016 + blast * 0.02 + jumble * 0.01 + formSum * 0.005
-    mat.opacity = 0.7 + formSum * 0.16 + blast * 0.12 + jumble * 0.06
+    mat.size = 0.014 + blast * 0.018 + jumble * 0.008 + formSum * 0.004 + influence * 0.004
+    mat.opacity = 0.78 + formSum * 0.12 + blast * 0.1 + jumble * 0.05
 
     points.rotation.y = t * 0.08 + p * 0.75 + blast * 0.55 + jumble * 0.2
     points.rotation.x = Math.sin(t * 0.18 + p * 2) * 0.08 + blast * 0.14
@@ -464,10 +547,10 @@ export function DustField({ count }: DustFieldProps) {
           <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={0.02}
+          size={0.016}
           vertexColors
           transparent
-          opacity={0.82}
+          opacity={0.88}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           sizeAttenuation

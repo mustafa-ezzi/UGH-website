@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AdminLayout } from './admin/AdminLayout'
 import { RequireAuth } from './admin/RequireAuth'
+import { AdminBrandsPage } from './admin/pages/AdminBrandsPage'
+import { AdminCategoriesPage } from './admin/pages/AdminCategoriesPage'
 import { AdminDashboardPage } from './admin/pages/AdminDashboardPage'
 import { AdminEnquiriesPage } from './admin/pages/AdminEnquiriesPage'
 import { AdminLoginPage } from './admin/pages/AdminLoginPage'
@@ -25,6 +27,8 @@ export default function App() {
             <Route index element={<AdminDashboardPage />} />
             <Route path="products" element={<AdminProductsPage />} />
             <Route path="products/:id" element={<AdminProductEditPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="brands" element={<AdminBrandsPage />} />
             <Route path="enquiries" element={<AdminEnquiriesPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
