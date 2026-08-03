@@ -159,6 +159,68 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# --- Cloudflare R2 / S3-compatible media storage ---
+def _env(name: str, default: str = "") -> str:
+    return (os.getenv(name, default) or "").strip().strip('"').strip("'")
+
+
+USE_S3 = _env("USE_S3", "False").lower() in {"1", "true", "yes"}
+
+if USE_S3:
+    INSTALLED_APPS = [*INSTALLED_APPS, "storages"]
+
+    AWS_ACCESS_KEY_ID = _env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = _env("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = _env("AWS_STORAGE_BUCKET_NAME", "ugh")
+    AWS_S3_ENDPOINT_URL = _env("AWS_S3_ENDPOINT_URL").rstrip("/")
+    AWS_S3_REGION_NAME = _env("AWS_S3_REGION_NAME", "auto") or "auto"
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    AWS_S3_ADDRESSING_STYLE = "path"
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "public, max-age=86400"}
+
+    _media_public = _env("MEDIA_PUBLIC_BASE_URL").rstrip("/")
+    _custom_domain = None
+    if _media_public:
+        from urllib.parse import urlparse
+
+        _parsed = urlparse(
+            _media_public if "://" in _media_public else f"https://{_media_public}"
+        )
+        _custom_domain = _parsed.netloc
+        MEDIA_URL = f"{_parsed.scheme}://{_custom_domain}/"
+    elif AWS_S3_ENDPOINT_URL and AWS_STORAGE_BUCKET_NAME:
+        MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": AWS_ACCESS_KEY_ID,
+                "secret_key": AWS_SECRET_ACCESS_KEY,
+                "bucket_name": AWS_STORAGE_BUCKET_NAME,
+                "endpoint_url": AWS_S3_ENDPOINT_URL or None,
+                "region_name": AWS_S3_REGION_NAME,
+                "default_acl": None,
+                "querystring_auth": False,
+                "file_overwrite": False,
+                "signature_version": "s3v4",
+                "addressing_style": "path",
+                "custom_domain": _custom_domain,
+                "object_parameters": AWS_S3_OBJECT_PARAMETERS,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+# Allow larger product image uploads (match MAX_UPLOAD_SIZE)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(

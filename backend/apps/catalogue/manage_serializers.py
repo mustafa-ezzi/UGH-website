@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.catalogue.models import Brand, Category, Product, ProductImage
+from apps.core.media import absolute_media_url
 from apps.core.models import SiteSetting
 from apps.enquiries.models import Enquiry
 
@@ -25,11 +26,7 @@ class ManageBrandSerializer(serializers.ModelSerializer):
     def get_logo_url(self, obj):
         if not obj.logo:
             return None
-        request = self.context.get("request")
-        url = obj.logo.url
-        if request is not None:
-            return request.build_absolute_uri(url)
-        return url
+        return absolute_media_url(obj.logo.url, self.context.get("request"))
 
 
 class ManageCategorySerializer(serializers.ModelSerializer):
@@ -55,11 +52,7 @@ class ManageCategorySerializer(serializers.ModelSerializer):
     def get_hero_image_url(self, obj):
         if not obj.hero_image:
             return None
-        request = self.context.get("request")
-        url = obj.hero_image.url
-        if request is not None:
-            return request.build_absolute_uri(url)
-        return url
+        return absolute_media_url(obj.hero_image.url, self.context.get("request"))
 
 
 class ManageProductImageSerializer(serializers.ModelSerializer):
@@ -74,11 +67,7 @@ class ManageProductImageSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         if not obj.image:
             return None
-        request = self.context.get("request")
-        url = obj.image.url
-        if request is not None:
-            return request.build_absolute_uri(url)
-        return url
+        return absolute_media_url(obj.image.url, self.context.get("request"))
 
 
 class ManageProductSerializer(serializers.ModelSerializer):
@@ -121,11 +110,7 @@ class ManageProductSerializer(serializers.ModelSerializer):
         image = obj.images.order_by("sort_order", "id").first()
         if not image or not image.image:
             return None
-        request = self.context.get("request")
-        url = image.image.url
-        if request is not None:
-            url = request.build_absolute_uri(url)
-        return url
+        return absolute_media_url(image.image.url, self.context.get("request"))
 
     def create(self, validated_data):
         categories = validated_data.pop("categories", [])

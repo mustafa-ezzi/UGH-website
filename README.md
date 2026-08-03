@@ -31,6 +31,8 @@ Editors group: `setup_roles` then assign staff users in Admin → Users (superus
 Copy `.env.example` to `.env`. Default DB is SQLite; set `DATABASE_ENGINE=postgres` for PostgreSQL.
 Enquiry emails print to the console locally; set `notify_enquiries_to` in Site settings.
 
+Product images upload to **Cloudflare R2** when `USE_S3=True` (see `.env.example`). Restart the backend after changing media env vars.
+
 ### Frontend
 
 ```powershell

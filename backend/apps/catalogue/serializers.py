@@ -1,11 +1,14 @@
 from rest_framework import serializers
 
 from apps.catalogue.models import Brand, Category, Product, ProductImage
+from apps.core.media import absolute_media_url
 from apps.core.models import SiteSetting
 from apps.enquiries.models import Enquiry
 
 
 class BrandSerializer(serializers.ModelSerializer):
+    logo = serializers.SerializerMethodField()
+
     class Meta:
         model = Brand
         fields = (
@@ -17,9 +20,15 @@ class BrandSerializer(serializers.ModelSerializer):
             "sort_order",
         )
 
+    def get_logo(self, obj):
+        if not obj.logo:
+            return None
+        return absolute_media_url(obj.logo.url, self.context.get("request"))
+
 
 class CategorySerializer(serializers.ModelSerializer):
     parent_slug = serializers.CharField(source="parent.slug", read_only=True, default=None)
+    hero_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -34,6 +43,11 @@ class CategorySerializer(serializers.ModelSerializer):
             "sort_order",
         )
 
+    def get_hero_image(self, obj):
+        if not obj.hero_image:
+            return None
+        return absolute_media_url(obj.hero_image.url, self.context.get("request"))
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
@@ -43,11 +57,9 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ("id", "image", "alt_text", "sort_order")
 
     def get_image(self, obj):
-        request = self.context.get("request")
-        url = obj.image.url
-        if request is not None:
-            return request.build_absolute_uri(url)
-        return url
+        if not obj.image:
+            return None
+        return absolute_media_url(obj.image.url, self.context.get("request"))
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -74,12 +86,9 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     def get_primary_image(self, obj):
         image = obj.images.order_by("sort_order", "id").first()
-        if not image:
+        if not image or not image.image:
             return None
-        request = self.context.get("request")
-        url = image.image.url
-        if request is not None:
-            url = request.build_absolute_uri(url)
+        url = absolute_media_url(image.image.url, self.context.get("request"))
         return {"id": image.id, "url": url, "alt_text": image.alt_text}
 
 
@@ -134,6 +143,8 @@ class EnquiryCreateSerializer(serializers.ModelSerializer):
 
 
 class SiteSettingSerializer(serializers.ModelSerializer):
+    hero_image = serializers.SerializerMethodField()
+
     class Meta:
         model = SiteSetting
         fields = (
@@ -155,3 +166,8 @@ class SiteSettingSerializer(serializers.ModelSerializer):
             "show_featured_section",
             "show_category_ribbon",
         )
+
+    def get_hero_image(self, obj):
+        if not obj.hero_image:
+            return None
+        return absolute_media_url(obj.hero_image.url, self.context.get("request"))
