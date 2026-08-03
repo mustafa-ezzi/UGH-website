@@ -1,6 +1,5 @@
 import { useAuthStore, type ManageUser } from './authStore'
-
-const API_BASE = '/api/manage'
+import { apiUrl } from '../api/base'
 
 export type ManageDashboard = {
   products_total: number
@@ -102,7 +101,7 @@ async function manageRequest<T>(path: string, init?: RequestInit): Promise<T> {
     headers.set('Content-Type', 'application/json')
   }
 
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(apiUrl(`/api/manage${path}`), {
     ...init,
     headers,
   })

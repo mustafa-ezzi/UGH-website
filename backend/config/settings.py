@@ -65,16 +65,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+def _postgres_from_url(url: str) -> dict:
+    """Parse postgres:// or postgresql:// URLs (Railway DATABASE_URL)."""
+    from urllib.parse import unquote, urlparse
+
+    parsed = urlparse(url)
+    if parsed.scheme not in {"postgres", "postgresql"}:
+        raise ValueError(f"Unsupported DATABASE_URL scheme: {parsed.scheme}")
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or 5432),
+    }
+
+
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "sqlite").lower()
-if DATABASE_ENGINE == "postgres":
+
+if DATABASE_URL:
+    DATABASES = {"default": _postgres_from_url(DATABASE_URL)}
+elif DATABASE_ENGINE == "postgres" or os.getenv("PGHOST"):
+    # Railway also exposes PG* vars; fall back to POSTGRES_* names
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "ugh_appliances"),
-            "USER": os.getenv("POSTGRES_USER", "ugh"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "ugh"),
-            "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+            "NAME": os.getenv("PGDATABASE")
+            or os.getenv("POSTGRES_DB", "ugh_appliances"),
+            "USER": os.getenv("PGUSER") or os.getenv("POSTGRES_USER", "ugh"),
+            "PASSWORD": os.getenv("PGPASSWORD")
+            or os.getenv("POSTGRES_PASSWORD", "ugh"),
+            "HOST": os.getenv("PGHOST") or os.getenv("POSTGRES_HOST", "localhost"),
+            "PORT": os.getenv("PGPORT") or os.getenv("POSTGRES_PORT", "5432"),
         }
     }
 else:

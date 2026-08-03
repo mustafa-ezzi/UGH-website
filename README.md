@@ -41,7 +41,25 @@ npm run dev
 
 - Storefront: http://localhost:5173/
 
-Vite proxies `/api` and `/media` to Django on port 8000.
+Vite proxies `/api` and `/media` to Django on port 8000 when `VITE_API_URL` is unset.
+
+### Production API
+
+Set on the frontend host (Vercel/Netlify/etc.):
+
+```
+VITE_API_URL=https://courageous-charisma-production.up.railway.app
+```
+
+On Railway (backend), include at least:
+
+```
+DJANGO_ALLOWED_HOSTS=courageous-charisma-production.up.railway.app
+CORS_ALLOWED_ORIGINS=https://YOUR-FRONTEND-DOMAIN
+DJANGO_DEBUG=False
+```
+
+(Replace `YOUR-FRONTEND-DOMAIN` with the real storefront URL.)
 
 ## Phase status
 

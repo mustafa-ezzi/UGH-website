@@ -8,11 +8,10 @@ import type {
   ProductQuery,
   SiteSettings,
 } from './types'
-
-const API_BASE = '/api'
+import { apiUrl } from './base'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(apiUrl(`/api${path}`), {
     headers: {
       Accept: 'application/json',
       ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
