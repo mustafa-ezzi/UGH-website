@@ -1,5 +1,5 @@
 import { useMemo, useRef, useEffect } from 'react'
-import { useFrame, type ThreeEvent } from '@react-three/fiber'
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useHeroProgress } from '../store/heroProgress'
 
@@ -15,32 +15,56 @@ function clamp01(x: number) {
   return Math.min(1, Math.max(0, x))
 }
 
-/** Smooth pulse that peaks in the middle of [a, b]. */
 function pulse(p: number, a: number, b: number) {
   if (p <= a || p >= b) return 0
   const t = (p - a) / (b - a)
   return Math.sin(t * Math.PI)
 }
 
-/** Ease into a form between [a, b], hold until holdEnd, then release. */
 function formWeight(p: number, a: number, b: number, holdEnd: number) {
   if (p < a) return 0
   if (p < b) return THREE.MathUtils.smoothstep(p, a, b)
   if (p < holdEnd) return 1
-  return 1 - THREE.MathUtils.smoothstep(p, holdEnd, holdEnd + 0.06)
+  return 1 - THREE.MathUtils.smoothstep(p, holdEnd, holdEnd + 0.08)
+}
+
+/** Cheap 3D hash noise for jumble / turbulence. */
+function hashNoise(x: number, y: number, z: number) {
+  return (
+    Math.sin(x * 1.31 + y * 0.77 + z * 0.43) * 0.5 +
+    Math.sin(x * 2.17 - y * 1.61 + z * 0.91) * 0.3 +
+    Math.sin(y * 3.07 + z * 2.33 - x * 0.55) * 0.2
+  )
 }
 
 /**
- * Scroll-driven dust:
- * cloud → merge into irregular forms → blast apart → remesh → blast → settle.
- * Shapes stay organic (noise + warped surfaces), not perfect primitives.
+ * Scroll-driven dust with messy merge → blast → remesh cycles.
+ * Touch + mouse both part particles; vertical page scroll stays via touch-action: pan-y.
  */
 export function DustField({ count }: DustFieldProps) {
   const pointsRef = useRef<THREE.Points>(null)
   const progressRef = useRef(0)
-  const cursorRef = useRef({ x: 0, y: 0, z: 0, active: 0, targetActive: 0 })
+  const prevProgressRef = useRef(0)
+  const cursorRef = useRef({
+    x: 0,
+    y: 0,
+    z: 0,
+    active: 0,
+    targetActive: 0,
+    /** Ignore particle drag while finger is clearly scrolling vertically */
+    scrolling: false,
+  })
+  const touchStartRef = useRef({ x: 0, y: 0 })
   const dispRef = useRef<Float32Array>(new Float32Array(count * 3))
   const velRef = useRef<Float32Array>(new Float32Array(count * 3))
+  const { gl, camera } = useThree()
+  const raycaster = useMemo(() => new THREE.Raycaster(), [])
+  const hitPlane = useMemo(
+    () => new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.35),
+    [],
+  )
+  const hitPoint = useMemo(() => new THREE.Vector3(), [])
+  const ndc = useMemo(() => new THREE.Vector2(), [])
 
   const data = useMemo(() => {
     const cloud = new Float32Array(count * 3)
@@ -49,6 +73,7 @@ export function DustField({ count }: DustFieldProps) {
     const flame = new Float32Array(count * 3)
     const jewel = new Float32Array(count * 3)
     const helix = new Float32Array(count * 3)
+    const scatter = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
     const phases = new Float32Array(count)
     const seeds = new Float32Array(count * 4)
@@ -66,7 +91,6 @@ export function DustField({ count }: DustFieldProps) {
       const u = i / count
       const rnd = () => Math.random()
 
-      // Per-particle personality
       seeds[i * 4] = rnd()
       seeds[i * 4 + 1] = rnd()
       seeds[i * 4 + 2] = rnd()
@@ -78,47 +102,54 @@ export function DustField({ count }: DustFieldProps) {
       const s2 = seeds[i * 4 + 2]
       const s3 = seeds[i * 4 + 3]
 
-      // --- Cloud (scattered ambient) ---
-      const cr = 1.2 + s0 * 7.4
+      // Wide messy cloud
+      const cr = 0.6 + s0 * 8.5
       const cTheta = s1 * Math.PI * 2
-      const cY = (s2 - 0.5) * 7.8
-      cloud[i3] = Math.cos(cTheta) * cr * (0.7 + s3 * 0.6)
-      cloud[i3 + 1] = cY
-      cloud[i3 + 2] = Math.sin(cTheta) * cr * (0.55 + s0 * 0.7)
+      const cPhi = (s2 - 0.5) * Math.PI
+      cloud[i3] = Math.cos(cTheta) * Math.cos(cPhi) * cr
+      cloud[i3 + 1] = Math.sin(cPhi) * cr * 0.95 + (s3 - 0.5) * 2.2
+      cloud[i3 + 2] = Math.sin(cTheta) * Math.cos(cPhi) * cr * 0.85
 
-      // --- Warped sphere / pebble cluster ---
+      // Extra scatter layer (used while jumbling)
+      const sr2 = 2 + s1 * 6.5
+      const st = s2 * Math.PI * 2
+      scatter[i3] = Math.cos(st + s0 * 9) * sr2 * (0.5 + s3)
+      scatter[i3 + 1] = (s0 - 0.5) * 8.5
+      scatter[i3 + 2] = Math.sin(st * 1.3 - s1 * 5) * sr2 * (0.4 + s2)
+
+      // Warped pebble / broken sphere
       const phi = Math.acos(2 * s0 - 1)
       const theta = s1 * Math.PI * 2
       const warp =
         1 +
-        0.22 * Math.sin(phi * 3 + s2 * 6) +
-        0.14 * Math.cos(theta * 5 + s3 * 4) +
-        0.08 * Math.sin((s0 + s1) * 18)
-      const sr = (1.15 + s2 * 0.55) * warp
-      sphere[i3] = Math.sin(phi) * Math.cos(theta) * sr
-      sphere[i3 + 1] = Math.cos(phi) * sr * (0.85 + s3 * 0.35)
-      sphere[i3 + 2] = Math.sin(phi) * Math.sin(theta) * sr
+        0.38 * Math.sin(phi * 4 + s2 * 7) +
+        0.28 * Math.cos(theta * 6 + s3 * 5) +
+        0.18 * Math.sin((s0 + s1) * 22)
+      const sr = (1.05 + s2 * 0.85) * warp
+      sphere[i3] = Math.sin(phi) * Math.cos(theta) * sr + (s3 - 0.5) * 0.55
+      sphere[i3 + 1] = Math.cos(phi) * sr * (0.7 + s3 * 0.55)
+      sphere[i3 + 2] = Math.sin(phi) * Math.sin(theta) * sr + (s0 - 0.5) * 0.45
 
-      // --- Irregular torus / ring of sparks ---
-      const R = 1.85 + s0 * 0.35
-      const rTube = 0.35 + s1 * 0.55
+      // Torn ring
+      const R = 1.6 + s0 * 0.7
+      const rTube = 0.25 + s1 * 0.85
       const a = s2 * Math.PI * 2
       const b = s3 * Math.PI * 2
-      const wobble = 0.18 * Math.sin(a * 3 + s1 * 8)
+      const wobble = 0.35 * Math.sin(a * 4 + s1 * 9) + (s0 - 0.5) * 0.4
       torus[i3] = (R + rTube * Math.cos(b) + wobble) * Math.cos(a)
-      torus[i3 + 1] = rTube * Math.sin(b) * 1.15 + Math.sin(a * 2) * 0.25
+      torus[i3 + 1] = rTube * Math.sin(b) * 1.4 + Math.sin(a * 3) * 0.45 + (s2 - 0.5) * 0.5
       torus[i3 + 2] = (R + rTube * Math.cos(b) + wobble) * Math.sin(a)
 
-      // --- Flame / spindle plume ---
-      const fy = (s0 - 0.08) * 3.6
-      const fSpread = (0.15 + (1 - Math.abs(fy) / 3.6) * 1.1) * (0.4 + s1)
+      // Wild flame plume
+      const fy = (s0 - 0.12) * 4.2
+      const fSpread = (0.2 + (1 - Math.abs(fy) / 4.2) * 1.45) * (0.35 + s1 * 1.1)
       const fAng = s2 * Math.PI * 2
-      const twist = fy * 1.4 + s3 * 4
-      flame[i3] = Math.cos(fAng + twist) * fSpread * (0.7 + 0.4 * Math.sin(fy * 2))
-      flame[i3 + 1] = fy
-      flame[i3 + 2] = Math.sin(fAng + twist) * fSpread * (0.55 + s0 * 0.5)
+      const twist = fy * 2.1 + s3 * 6
+      flame[i3] = Math.cos(fAng + twist) * fSpread * (0.6 + 0.7 * Math.sin(fy * 2.4))
+      flame[i3 + 1] = fy + Math.sin(s1 * 20) * 0.25
+      flame[i3 + 2] = Math.sin(fAng + twist) * fSpread * (0.5 + s0 * 0.7)
 
-      // --- Faceted jewel / octahedron-ish ---
+      // Faceted jewel — messier
       const jAxes = [
         [1, 0, 0],
         [-1, 0, 0],
@@ -128,29 +159,88 @@ export function DustField({ count }: DustFieldProps) {
         [0, 0, -1],
       ]
       const face = jAxes[i % 6]
-      const jNoise = (s0 - 0.5) * 0.45
-      const jScale = 1.35 + s1 * 0.5
-      jewel[i3] = (face[0] + (s1 - 0.5) * 0.9 + jNoise) * jScale
-      jewel[i3 + 1] = (face[1] + (s2 - 0.5) * 0.9) * jScale * 1.15
-      jewel[i3 + 2] = (face[2] + (s3 - 0.5) * 0.9 - jNoise * 0.5) * jScale
+      const jScale = 1.2 + s1 * 0.75
+      jewel[i3] = (face[0] + (s1 - 0.5) * 1.35 + (s0 - 0.5) * 0.7) * jScale
+      jewel[i3 + 1] = (face[1] + (s2 - 0.5) * 1.35) * jScale * 1.2
+      jewel[i3 + 2] = (face[2] + (s3 - 0.5) * 1.35 - (s0 - 0.5) * 0.5) * jScale
 
-      // --- Rising helix / vortex ---
-      const hy = (u - 0.5) * 4.2 + (s0 - 0.5) * 0.6
-      const hR = 0.55 + s1 * 1.1 + Math.sin(hy * 1.8) * 0.35
-      const hAng = hy * 2.8 + s2 * Math.PI * 2
-      helix[i3] = Math.cos(hAng) * hR
+      // Helix / vortex
+      const hy = (u - 0.5) * 5 + (s0 - 0.5) * 1.1
+      const hR = 0.4 + s1 * 1.5 + Math.sin(hy * 2.2) * 0.55
+      const hAng = hy * 3.4 + s2 * Math.PI * 2
+      helix[i3] = Math.cos(hAng) * hR + (s3 - 0.5) * 0.4
       helix[i3 + 1] = hy
-      helix[i3 + 2] = Math.sin(hAng) * hR
+      helix[i3 + 2] = Math.sin(hAng) * hR + (s0 - 0.5) * 0.4
 
       const c = palette[i % palette.length].clone()
-      c.offsetHSL(0, (rnd() - 0.5) * 0.08, (rnd() - 0.5) * 0.1)
+      c.offsetHSL(0, (rnd() - 0.5) * 0.1, (rnd() - 0.5) * 0.12)
       colors[i3] = c.r
       colors[i3 + 1] = c.g
       colors[i3 + 2] = c.b
     }
 
-    return { cloud, sphere, torus, flame, jewel, helix, colors, phases, seeds }
+    return { cloud, sphere, torus, flame, jewel, helix, scatter, colors, phases, seeds }
   }, [count])
+
+  function projectPointer(clientX: number, clientY: number) {
+    const rect = gl.domElement.getBoundingClientRect()
+    ndc.x = ((clientX - rect.left) / rect.width) * 2 - 1
+    ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1
+    raycaster.setFromCamera(ndc, camera)
+    if (raycaster.ray.intersectPlane(hitPlane, hitPoint)) {
+      cursorRef.current.x = hitPoint.x
+      cursorRef.current.y = hitPoint.y
+      cursorRef.current.z = hitPoint.z
+    }
+  }
+
+  // Native touch bridge — works even when R3F pointer events are flaky on mobile.
+  // Does NOT preventDefault, so vertical pan-y scrolling still works.
+  useEffect(() => {
+    const el = gl.domElement
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      if (!touch) return
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY }
+      cursorRef.current.scrolling = false
+      projectPointer(touch.clientX, touch.clientY)
+      cursorRef.current.targetActive = 1
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      if (!touch) return
+      const dx = touch.clientX - touchStartRef.current.x
+      const dy = touch.clientY - touchStartRef.current.y
+      // Clear vertical scroll intent → ease off particle push so page can move
+      if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx) * 1.15) {
+        cursorRef.current.scrolling = true
+        cursorRef.current.targetActive = 0.12
+      } else {
+        cursorRef.current.scrolling = false
+        cursorRef.current.targetActive = 1
+        projectPointer(touch.clientX, touch.clientY)
+      }
+    }
+
+    const onTouchEnd = () => {
+      cursorRef.current.targetActive = 0
+      cursorRef.current.scrolling = false
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [gl, camera, raycaster, hitPlane, hitPoint, ndc])
 
   useEffect(() => {
     progressRef.current = useHeroProgress.getState().progress
@@ -170,40 +260,44 @@ export function DustField({ count }: DustFieldProps) {
     const t = clock.elapsedTime
     const p = progressRef.current
     const dt = Math.min(delta, 0.033)
+    const scrollSpeed = Math.min(1, Math.abs(p - prevProgressRef.current) / Math.max(dt, 0.008))
+    prevProgressRef.current = p
 
-    const { cloud, sphere, torus, flame, jewel, helix, phases, seeds } = data
+    const { cloud, sphere, torus, flame, jewel, helix, scatter, phases, seeds } = data
 
-    // Form weights across the hero scroll
-    const wSphere = formWeight(p, 0.06, 0.16, 0.2)
-    const wTorus = formWeight(p, 0.34, 0.44, 0.48)
-    const wFlame = formWeight(p, 0.56, 0.66, 0.7)
-    const wHelix = formWeight(p, 0.72, 0.8, 0.84)
-    const wJewel = THREE.MathUtils.smoothstep(p, 0.86, 0.96)
+    const wSphere = formWeight(p, 0.05, 0.14, 0.17)
+    const wTorus = formWeight(p, 0.32, 0.42, 0.45)
+    const wFlame = formWeight(p, 0.54, 0.63, 0.66)
+    const wHelix = formWeight(p, 0.7, 0.78, 0.81)
+    const wJewel = THREE.MathUtils.smoothstep(p, 0.86, 0.97)
 
-    // Blast peaks between forms — particles explode outward then return
     const blast =
-      pulse(p, 0.18, 0.34) * 1 +
-      pulse(p, 0.46, 0.58) * 1.15 +
-      pulse(p, 0.68, 0.78) * 0.9 +
-      pulse(p, 0.82, 0.9) * 0.55
+      pulse(p, 0.15, 0.33) * 1.25 +
+      pulse(p, 0.43, 0.56) * 1.4 +
+      pulse(p, 0.64, 0.76) * 1.15 +
+      pulse(p, 0.8, 0.9) * 0.75
 
+    // Continuous mid-scroll disorder — keeps forms from looking too clean
+    const jumble = clamp01(Math.sin(p * Math.PI) * 0.92 + scrollSpeed * 0.55)
     const formSum = wSphere + wTorus + wFlame + wHelix + wJewel
-    const wCloud = Math.max(0, 1 - formSum) * (1 - blast * 0.35)
+    const wScatter = jumble * (0.35 + blast * 0.55) * (1 - wJewel * 0.7)
+    const wCloud = Math.max(0, 1 - formSum - wScatter * 0.5) * (1 - blast * 0.25)
 
     cursorRef.current.active = lerp(
       cursorRef.current.active,
       cursorRef.current.targetActive,
-      1 - Math.exp(-dt * 7),
+      1 - Math.exp(-dt * 8),
     )
     const cx = cursorRef.current.x
     const cy = cursorRef.current.y
     const cz = cursorRef.current.z
     const influence = cursorRef.current.active
-    const radiusInfluence = 1.65
-    const partStrength = 0.55
+    const radiusInfluence = 2.1
+    const partStrength = 0.85
 
-    const follow = 1 - Math.exp(-dt * (4.2 + formSum * 2.5))
-    const blastFollow = 1 - Math.exp(-dt * 3.2)
+    // Laggy follow while jumbling = messier trails
+    const follow = 1 - Math.exp(-dt * (2.6 + formSum * 2.2 - jumble * 1.1))
+    const blastFollow = 1 - Math.exp(-dt * 2.4)
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
@@ -213,67 +307,84 @@ export function DustField({ count }: DustFieldProps) {
       const s2 = seeds[i * 4 + 2]
       const s3 = seeds[i * 4 + 3]
 
-      // Blend shape targets
       let tx =
         cloud[i3] * wCloud +
         sphere[i3] * wSphere +
         torus[i3] * wTorus +
         flame[i3] * wFlame +
         helix[i3] * wHelix +
-        jewel[i3] * wJewel
+        jewel[i3] * wJewel +
+        scatter[i3] * wScatter
       let ty =
         cloud[i3 + 1] * wCloud +
         sphere[i3 + 1] * wSphere +
         torus[i3 + 1] * wTorus +
         flame[i3 + 1] * wFlame +
         helix[i3 + 1] * wHelix +
-        jewel[i3 + 1] * wJewel
+        jewel[i3 + 1] * wJewel +
+        scatter[i3 + 1] * wScatter
       let tz =
         cloud[i3 + 2] * wCloud +
         sphere[i3 + 2] * wSphere +
         torus[i3 + 2] * wTorus +
         flame[i3 + 2] * wFlame +
         helix[i3 + 2] * wHelix +
-        jewel[i3 + 2] * wJewel
+        jewel[i3 + 2] * wJewel +
+        scatter[i3 + 2] * wScatter
 
-      // Normalize if weights sum > 1 from overlapping forms
-      const wNorm = wCloud + formSum
+      const wNorm = wCloud + formSum + wScatter
       if (wNorm > 1.001) {
         tx /= wNorm
         ty /= wNorm
         tz /= wNorm
       }
 
-      // Living micro-motion (stronger in cloud, quieter when formed)
-      const life = 0.04 + (1 - clamp01(formSum)) * 0.12
-      tx += Math.cos(t * (0.35 + s0) + phase) * life
-      ty += Math.sin(t * (0.28 + s1) + phase) * life * 0.85
-      tz += Math.sin(t * (0.31 + s2) + phase) * life
+      // Turbulence — stronger while scrolling / blasting
+      const turbAmp = 0.08 + jumble * 0.55 + blast * 0.85 + scrollSpeed * 0.4
+      const n1 = hashNoise(tx * 0.7 + t * 0.55, ty * 0.7 + phase, tz * 0.7)
+      const n2 = hashNoise(ty * 0.9 - t * 0.4, tz * 0.9 + s0 * 8, tx * 0.9)
+      const n3 = hashNoise(tz * 0.8 + t * 0.35, tx * 0.8 + s1 * 6, ty * 0.8)
+      tx += n1 * turbAmp * (0.7 + s2)
+      ty += n2 * turbAmp * (0.6 + s3)
+      tz += n3 * turbAmp * (0.7 + s0)
 
-      // Blast: push radially from center with per-particle variance
+      // Living micro-motion
+      const life = 0.06 + (1 - clamp01(formSum)) * 0.18 + jumble * 0.12
+      tx += Math.cos(t * (0.55 + s0 * 1.4) + phase) * life
+      ty += Math.sin(t * (0.42 + s1 * 1.2) + phase) * life
+      tz += Math.sin(t * (0.48 + s2 * 1.3) + phase) * life
+
       if (blast > 0.01) {
         const len = Math.sqrt(tx * tx + ty * ty + tz * tz) + 0.0001
-        const outward = 1.2 + s3 * 3.8 + (i % 7) * 0.15
-        const chaos = Math.sin(phase * 3 + t * 2.2 + s0 * 10) * 0.55
-        const bx = (tx / len) * outward + Math.cos(phase + t) * chaos
-        const by = (ty / len) * outward * 0.75 + Math.sin(phase * 1.7) * chaos
-        const bz = (tz / len) * outward + Math.sin(phase + t * 1.3) * chaos
-        tx = lerp(tx, bx, blast)
-        ty = lerp(ty, by, blast)
-        tz = lerp(tz, bz, blast)
+        const outward = 1.8 + s3 * 5.2 + (i % 11) * 0.22 + jumble * 1.4
+        const chaos = Math.sin(phase * 4 + t * 3.1 + s0 * 14) * (1.1 + jumble)
+        const swirl = t * 2.4 + phase
+        const bx =
+          (tx / len) * outward +
+          Math.cos(swirl) * chaos +
+          Math.sin(phase * 2.3) * outward * 0.35
+        const by =
+          (ty / len) * outward * 0.85 +
+          Math.sin(swirl * 0.8) * chaos +
+          (s1 - 0.5) * outward * 0.5
+        const bz =
+          (tz / len) * outward +
+          Math.sin(swirl * 1.2) * chaos +
+          Math.cos(phase * 1.7) * outward * 0.3
+        tx = lerp(tx, bx, Math.min(1, blast * 1.15))
+        ty = lerp(ty, by, Math.min(1, blast * 1.15))
+        tz = lerp(tz, bz, Math.min(1, blast * 1.15))
 
-        // Impulse velocity for snappier shatter feel
-        vel[i3] += (bx - arr[i3]) * blast * dt * 8
-        vel[i3 + 1] += (by - arr[i3 + 1]) * blast * dt * 8
-        vel[i3 + 2] += (bz - arr[i3 + 2]) * blast * dt * 8
+        vel[i3] += (bx - arr[i3]) * blast * dt * 11
+        vel[i3 + 1] += (by - arr[i3 + 1]) * blast * dt * 11
+        vel[i3 + 2] += (bz - arr[i3 + 2]) * blast * dt * 11
       } else {
-        // Dampen residual shatter velocity when reforming
-        vel[i3] *= Math.exp(-dt * 6)
-        vel[i3 + 1] *= Math.exp(-dt * 6)
-        vel[i3 + 2] *= Math.exp(-dt * 6)
+        vel[i3] *= Math.exp(-dt * 5)
+        vel[i3 + 1] *= Math.exp(-dt * 5)
+        vel[i3 + 2] *= Math.exp(-dt * 5)
       }
 
-      // Soft cursor parting (desktop)
+      // Cursor / finger parting
       let dx = 0
       let dy = 0
       let dz = 0
@@ -291,30 +402,29 @@ export function DustField({ count }: DustFieldProps) {
         }
       }
 
-      const smooth = 1 - Math.exp(-dt * 9)
+      const smooth = 1 - Math.exp(-dt * 10)
       disp[i3] = lerp(disp[i3], dx, smooth)
       disp[i3 + 1] = lerp(disp[i3 + 1], dy, smooth)
       disp[i3 + 2] = lerp(disp[i3 + 2], dz, smooth)
 
-      const blend = blast > 0.2 ? blastFollow : follow
-      arr[i3] = lerp(arr[i3], tx + disp[i3] + vel[i3] * 0.08, blend)
-      arr[i3 + 1] = lerp(arr[i3 + 1], ty + disp[i3 + 1] + vel[i3 + 1] * 0.08, blend)
-      arr[i3 + 2] = lerp(arr[i3 + 2], tz + disp[i3 + 2] + vel[i3 + 2] * 0.08, blend)
+      const blend = blast > 0.18 ? blastFollow : follow
+      arr[i3] = lerp(arr[i3], tx + disp[i3] + vel[i3] * 0.12, blend)
+      arr[i3 + 1] = lerp(arr[i3 + 1], ty + disp[i3 + 1] + vel[i3 + 1] * 0.12, blend)
+      arr[i3 + 2] = lerp(arr[i3 + 2], tz + disp[i3 + 2] + vel[i3 + 2] * 0.12, blend)
     }
 
     pos.needsUpdate = true
 
-    // Slow tumble + blast spin kick
     const mat = points.material as THREE.PointsMaterial
-    mat.size = 0.018 + blast * 0.012 + formSum * 0.006
-    mat.opacity = 0.72 + formSum * 0.14 + blast * 0.08
+    mat.size = 0.016 + blast * 0.02 + jumble * 0.01 + formSum * 0.005
+    mat.opacity = 0.7 + formSum * 0.16 + blast * 0.12 + jumble * 0.06
 
-    points.rotation.y = t * 0.06 + p * 0.55 + blast * 0.35
-    points.rotation.x = Math.sin(t * 0.12) * 0.04 + blast * 0.08
+    points.rotation.y = t * 0.08 + p * 0.75 + blast * 0.55 + jumble * 0.2
+    points.rotation.x = Math.sin(t * 0.18 + p * 2) * 0.08 + blast * 0.14
+    points.rotation.z = Math.sin(t * 0.11 + jumble) * 0.05
   })
 
   function setCursor(event: ThreeEvent<PointerEvent>, active: number) {
-    if (event.pointerType === 'touch') return
     cursorRef.current.x = event.point.x
     cursorRef.current.y = event.point.y
     cursorRef.current.z = event.point.z
@@ -326,6 +436,7 @@ export function DustField({ count }: DustFieldProps) {
       <mesh
         position={[0, 0, 0.35]}
         onPointerMove={(e) => {
+          // Touch handled by native bridge; mouse/pen still via R3F
           if (e.pointerType === 'touch') return
           e.stopPropagation()
           setCursor(e, 1)
@@ -344,7 +455,7 @@ export function DustField({ count }: DustFieldProps) {
           cursorRef.current.targetActive = 0
         }}
       >
-        <planeGeometry args={[14, 10]} />
+        <planeGeometry args={[16, 12]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
       </mesh>
       <points ref={pointsRef} frustumCulled={false}>
