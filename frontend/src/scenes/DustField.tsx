@@ -14,7 +14,7 @@ function lerp(a: number, b: number, t: number) {
 /**
  * Steady dust field:
  * — particles rest still (no bounce / ambient wiggle)
- * — scroll only expands them into a wider scatter
+ * — scroll cycles: crowd → explode → crowd → explode…
  * — hover / touch gently parts a small local area, then settles back
  */
 export function DustField({ count }: DustFieldProps) {
@@ -40,8 +40,8 @@ export function DustField({ count }: DustFieldProps) {
   const ndc = useMemo(() => new THREE.Vector2(), [])
 
   const data = useMemo(() => {
-    const rest = new Float32Array(count * 3)
-    const scattered = new Float32Array(count * 3)
+    const crowded = new Float32Array(count * 3)
+    const exploded = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
 
     const gold = new THREE.Color('#d4a84b')
@@ -59,22 +59,22 @@ export function DustField({ count }: DustFieldProps) {
       const s2 = Math.random()
       const s3 = Math.random()
 
-      // Compact resting cloud
-      const dens = Math.pow(s0, 0.65)
-      const r0 = 0.35 + dens * 2.6
+      // Tight crowded cluster
+      const dens = Math.pow(s0, 0.7)
+      const r0 = 0.2 + dens * 1.85
       const th0 = s1 * Math.PI * 2
-      const ph0 = (s2 - 0.5) * Math.PI * 0.9
-      rest[i3] = Math.cos(th0) * Math.cos(ph0) * r0
-      rest[i3 + 1] = Math.sin(ph0) * r0 * 0.85 + (s3 - 0.5) * 0.35
-      rest[i3 + 2] = Math.sin(th0) * Math.cos(ph0) * r0 * 0.9
+      const ph0 = (s2 - 0.5) * Math.PI * 0.85
+      crowded[i3] = Math.cos(th0) * Math.cos(ph0) * r0
+      crowded[i3 + 1] = Math.sin(ph0) * r0 * 0.8 + (s3 - 0.5) * 0.25
+      crowded[i3 + 2] = Math.sin(th0) * Math.cos(ph0) * r0 * 0.88
 
-      // Wide scatter target (used as scroll progresses)
-      const r1 = 1.4 + dens * 7.2 + s3 * 2.2
-      const th1 = s1 * Math.PI * 2 + s3 * 0.8
-      const ph1 = (s2 - 0.5) * Math.PI
-      scattered[i3] = Math.cos(th1) * Math.cos(ph1) * r1
-      scattered[i3 + 1] = Math.sin(ph1) * r1 * 1.05 + (s0 - 0.5) * 2.4
-      scattered[i3 + 2] = Math.sin(th1) * Math.cos(ph1) * r1 * 0.95
+      // Exploded / wide scatter (radial burst from same seed angles)
+      const r1 = 2.2 + dens * 7.8 + s3 * 3.2
+      const th1 = th0 + (s3 - 0.5) * 0.55
+      const ph1 = ph0 + (s0 - 0.5) * 0.4
+      exploded[i3] = Math.cos(th1) * Math.cos(ph1) * r1
+      exploded[i3 + 1] = Math.sin(ph1) * r1 * 1.05 + (s1 - 0.5) * 1.8
+      exploded[i3 + 2] = Math.sin(th1) * Math.cos(ph1) * r1 * 0.95
 
       const c = palette[i % palette.length].clone()
       c.offsetHSL(0, (Math.random() - 0.5) * 0.08, (Math.random() - 0.5) * 0.1)
@@ -83,7 +83,7 @@ export function DustField({ count }: DustFieldProps) {
       colors[i3 + 2] = c.b
     }
 
-    return { rest, scattered, colors }
+    return { crowded, exploded, colors }
   }, [count])
 
   function projectPointer(clientX: number, clientY: number) {
@@ -167,10 +167,11 @@ export function DustField({ count }: DustFieldProps) {
     const disp = dispRef.current
     const dt = Math.min(delta, 0.033)
     const p = progressRef.current
-    const { rest, scattered } = data
+    const { crowded, exploded } = data
 
-    // Scroll only: expand from tight cloud → wide scatter (no bounce)
-    const scatterT = THREE.MathUtils.smoothstep(p, 0.05, 0.92)
+    // Scroll cycles: crowded (0) → explode (1) → crowded → explode… (3 pulses)
+    // sin² keeps motion smooth with no overshoot / bounce
+    const explodeT = Math.sin(p * 3 * Math.PI) ** 2
 
     cursorRef.current.active = lerp(
       cursorRef.current.active,
@@ -182,7 +183,7 @@ export function DustField({ count }: DustFieldProps) {
     const cy = cursorRef.current.y
     const cz = cursorRef.current.z
     const influence = cursorRef.current.active
-    // Small local interaction only
+    // Small local interaction only (unchanged feel)
     const radius = cursorRef.current.isTouch ? 1.05 : 0.85
     const pushMax = cursorRef.current.isTouch ? 0.28 : 0.22
     const settle = 1 - Math.exp(-dt * 12)
@@ -191,9 +192,9 @@ export function DustField({ count }: DustFieldProps) {
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
 
-      const baseX = lerp(rest[i3], scattered[i3], scatterT)
-      const baseY = lerp(rest[i3 + 1], scattered[i3 + 1], scatterT)
-      const baseZ = lerp(rest[i3 + 2], scattered[i3 + 2], scatterT)
+      const baseX = lerp(crowded[i3], exploded[i3], explodeT)
+      const baseY = lerp(crowded[i3 + 1], exploded[i3 + 1], explodeT)
+      const baseZ = lerp(crowded[i3 + 2], exploded[i3 + 2], explodeT)
 
       let dx = 0
       let dy = 0
@@ -261,7 +262,7 @@ export function DustField({ count }: DustFieldProps) {
       </mesh>
       <points ref={pointsRef} frustumCulled={false}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[data.rest, 3]} />
+          <bufferAttribute attach="attributes-position" args={[data.crowded, 3]} />
           <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
         </bufferGeometry>
         <pointsMaterial

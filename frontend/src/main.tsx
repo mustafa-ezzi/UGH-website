@@ -9,6 +9,7 @@ import './styles/cinematic.css'
 import './styles/motion.css'
 import './styles/kitchenline.css'
 import './styles/admin.css'
+import './styles/about.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
