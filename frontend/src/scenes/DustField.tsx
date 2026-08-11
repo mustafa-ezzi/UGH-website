@@ -11,6 +11,13 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
 }
 
+/** Smooth 0→1→0 pulse between [a, b] — used for explode peaks. */
+function explodePulse(p: number, a: number, b: number) {
+  if (p <= a || p >= b) return 0
+  const t = (p - a) / (b - a)
+  return Math.sin(t * Math.PI)
+}
+
 /**
  * Steady dust field:
  * — particles rest still (no bounce / ambient wiggle)
@@ -59,22 +66,22 @@ export function DustField({ count }: DustFieldProps) {
       const s2 = Math.random()
       const s3 = Math.random()
 
-      // Tight crowded cluster
-      const dens = Math.pow(s0, 0.7)
-      const r0 = 0.2 + dens * 1.85
+      // Tight crowded cluster — denser so “crowd again” reads clearly
+      const dens = Math.pow(s0, 0.75)
+      const r0 = 0.12 + dens * 1.35
       const th0 = s1 * Math.PI * 2
-      const ph0 = (s2 - 0.5) * Math.PI * 0.85
+      const ph0 = (s2 - 0.5) * Math.PI * 0.75
       crowded[i3] = Math.cos(th0) * Math.cos(ph0) * r0
-      crowded[i3 + 1] = Math.sin(ph0) * r0 * 0.8 + (s3 - 0.5) * 0.25
-      crowded[i3 + 2] = Math.sin(th0) * Math.cos(ph0) * r0 * 0.88
+      crowded[i3 + 1] = Math.sin(ph0) * r0 * 0.75 + (s3 - 0.5) * 0.18
+      crowded[i3 + 2] = Math.sin(th0) * Math.cos(ph0) * r0 * 0.82
 
-      // Exploded / wide scatter (radial burst from same seed angles)
-      const r1 = 2.2 + dens * 7.8 + s3 * 3.2
-      const th1 = th0 + (s3 - 0.5) * 0.55
-      const ph1 = ph0 + (s0 - 0.5) * 0.4
+      // Exploded / wide scatter
+      const r1 = 2.8 + dens * 8.5 + s3 * 3.6
+      const th1 = th0 + (s3 - 0.5) * 0.7
+      const ph1 = ph0 + (s0 - 0.5) * 0.55
       exploded[i3] = Math.cos(th1) * Math.cos(ph1) * r1
-      exploded[i3 + 1] = Math.sin(ph1) * r1 * 1.05 + (s1 - 0.5) * 1.8
-      exploded[i3 + 2] = Math.sin(th1) * Math.cos(ph1) * r1 * 0.95
+      exploded[i3 + 1] = Math.sin(ph1) * r1 * 1.1 + (s1 - 0.5) * 2.2
+      exploded[i3 + 2] = Math.sin(th1) * Math.cos(ph1) * r1
 
       const c = palette[i % palette.length].clone()
       c.offsetHSL(0, (Math.random() - 0.5) * 0.08, (Math.random() - 0.5) * 0.1)
@@ -169,9 +176,13 @@ export function DustField({ count }: DustFieldProps) {
     const p = progressRef.current
     const { crowded, exploded } = data
 
-    // Scroll cycles: crowded (0) → explode (1) → crowded → explode… (3 pulses)
-    // sin² keeps motion smooth with no overshoot / bounce
-    const explodeT = Math.sin(p * 3 * Math.PI) ** 2
+    // Crowd → explode → crowd → explode → crowd (held crowded between short bursts)
+    const explodeT = Math.min(
+      1,
+      explodePulse(p, 0.1, 0.26) +
+        explodePulse(p, 0.4, 0.56) +
+        explodePulse(p, 0.7, 0.86),
+    )
 
     cursorRef.current.active = lerp(
       cursorRef.current.active,
