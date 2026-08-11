@@ -2,7 +2,7 @@
 
 .cinematic-hero {
   position: relative;
-  background: var(--ugh-void);
+  background: #1a1f28;
   color: var(--ugh-text-on-dark);
 }
 
@@ -11,7 +11,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: var(--ugh-void);
+  background: #1a1f28;
 }
 
 .cinematic-hero__canvas {
@@ -34,8 +34,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 35%, rgba(196, 92, 38, 0.22), transparent 55%),
-    var(--ugh-void);
+    radial-gradient(ellipse at 50% 35%, rgba(196, 92, 38, 0.2), transparent 55%),
+    #1a1f28;
 }
 
 .cinematic-hero__vignette {
@@ -43,11 +43,11 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  /* Soft edge only — keep center particles fully visible */
+  /* Lighter wash so gold/ember dust stays readable in the center */
   background:
-    linear-gradient(180deg, rgba(10, 9, 8, 0.35), transparent 18%),
-    linear-gradient(0deg, rgba(10, 9, 8, 0.45), transparent 22%),
-    radial-gradient(ellipse at center, transparent 55%, rgba(10, 9, 8, 0.4) 100%);
+    linear-gradient(180deg, rgba(14, 17, 22, 0.28), transparent 22%),
+    linear-gradient(0deg, rgba(14, 17, 22, 0.32), transparent 26%),
+    radial-gradient(ellipse at center, transparent 62%, rgba(14, 17, 22, 0.28) 100%);
 }
 
 .cinematic-hero__overlay {

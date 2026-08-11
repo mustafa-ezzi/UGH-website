@@ -266,10 +266,10 @@ export function DustField({ count }: DustFieldProps) {
           <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={0.016}
+          size={0.018}
           vertexColors
           transparent
-          opacity={0.88}
+          opacity={0.95}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           sizeAttenuation

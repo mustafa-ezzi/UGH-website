@@ -34,10 +34,10 @@ function CameraRig() {
 function SceneLights() {
   return (
     <>
-      <ambientLight intensity={0.28} color="#c5ccd3" />
-      <directionalLight position={[-2.5, 4, 3]} intensity={1.05} color="#fff4ea" />
-      <pointLight position={[0, 1.2, 1.5]} intensity={1.1} color="#c45c26" distance={8} />
-      <pointLight position={[1.5, -0.5, -1]} intensity={0.5} color="#8a9199" distance={6} />
+      <ambientLight intensity={0.42} color="#d8dee6" />
+      <directionalLight position={[-2.5, 4, 3]} intensity={1.25} color="#fff4ea" />
+      <pointLight position={[0, 1.2, 1.5]} intensity={1.35} color="#c45c26" distance={9} />
+      <pointLight position={[1.5, -0.5, -1]} intensity={0.65} color="#a8b4c0" distance={7} />
     </>
   )
 }
@@ -61,8 +61,8 @@ export function HeroScene({ className }: HeroSceneProps) {
           raycaster.params.Points = { threshold: 0.3 }
         }}
       >
-        <color attach="background" args={['#0a0908']} />
-        <fog attach="fog" args={['#0a0908', 7.5, 18]} />
+        <color attach="background" args={['#1a1f28']} />
+        <fog attach="fog" args={['#1a1f28', 10, 22]} />
         <Suspense fallback={null}>
           <CameraRig />
           <SceneLights />
