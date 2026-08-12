@@ -604,6 +604,24 @@
   white-space: nowrap;
 }
 
+.manage-slide-preview {
+  width: 100%;
+  max-width: 28rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  background: #2a2622;
+  border: 1px solid var(--manage-line);
+  display: grid;
+  place-items: center;
+  color: var(--manage-muted);
+  font-size: 0.85rem;
+}
+
+.manage-slide-preview--empty {
+  min-height: 8rem;
+}
+
 .manage-images__tools {
   display: flex;
   flex-wrap: wrap;

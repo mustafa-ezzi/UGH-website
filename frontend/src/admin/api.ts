@@ -319,3 +319,73 @@ export function updateManageCategory(id: number, payload: Partial<ManageCategory
 export function deleteManageCategory(id: number) {
   return manageRequest<void>(`/categories/${id}/`, { method: 'DELETE' })
 }
+
+export type ManageCarouselSlide = {
+  id: number
+  image_url: string | null
+  eyebrow: string
+  title: string
+  body: string
+  cta: string
+  href: string
+  sort_order: number
+  is_active: boolean
+}
+
+export type CarouselSlidePayload = {
+  title: string
+  eyebrow?: string
+  body?: string
+  cta?: string
+  href?: string
+  sort_order?: number
+  is_active?: boolean
+}
+
+function appendSlideFields(body: FormData, payload: CarouselSlidePayload) {
+  body.append('title', payload.title)
+  body.append('eyebrow', payload.eyebrow ?? '')
+  body.append('body', payload.body ?? '')
+  body.append('cta', payload.cta ?? '')
+  body.append('href', payload.href ?? '/catalogue')
+  body.append('sort_order', String(payload.sort_order ?? 0))
+  body.append('is_active', payload.is_active === false ? 'false' : 'true')
+}
+
+export function fetchManageCarouselSlides() {
+  return manageRequest<ManageCarouselSlide[]>('/carousel-slides/')
+}
+
+export function createManageCarouselSlide(payload: CarouselSlidePayload, image: File) {
+  const body = new FormData()
+  body.append('image', image)
+  appendSlideFields(body, payload)
+  return manageRequest<ManageCarouselSlide>('/carousel-slides/', {
+    method: 'POST',
+    body,
+  })
+}
+
+export function updateManageCarouselSlide(
+  id: number,
+  payload: CarouselSlidePayload,
+  image?: File | null,
+) {
+  if (image) {
+    const body = new FormData()
+    body.append('image', image)
+    appendSlideFields(body, payload)
+    return manageRequest<ManageCarouselSlide>(`/carousel-slides/${id}/`, {
+      method: 'PATCH',
+      body,
+    })
+  }
+  return manageRequest<ManageCarouselSlide>(`/carousel-slides/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function deleteManageCarouselSlide(id: number) {
+  return manageRequest<void>(`/carousel-slides/${id}/`, { method: 'DELETE' })
+}

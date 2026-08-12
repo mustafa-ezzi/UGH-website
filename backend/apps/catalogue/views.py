@@ -9,11 +9,12 @@ from apps.catalogue.serializers import (
     BrandSerializer,
     CategorySerializer,
     EnquiryCreateSerializer,
+    HomepageSlideSerializer,
     ProductDetailSerializer,
     ProductListSerializer,
     SiteSettingSerializer,
 )
-from apps.core.models import SiteSetting
+from apps.core.models import HomepageSlide, SiteSetting
 from apps.enquiries.models import Enquiry
 
 
@@ -66,3 +67,10 @@ class SiteSettingView(generics.RetrieveAPIView):
 
     def get_object(self):
         return SiteSetting.load()
+
+
+class HomepageSlideListView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = HomepageSlideSerializer
+    pagination_class = None
+    queryset = HomepageSlide.objects.filter(is_active=True)

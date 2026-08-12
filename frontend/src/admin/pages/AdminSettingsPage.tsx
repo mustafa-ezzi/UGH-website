@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fetchManageSettings, updateManageSettings, type ManageSettings } from '../api'
 import { PageHeader } from '../components/PageHeader'
 
@@ -79,6 +80,10 @@ export function AdminSettingsPage() {
 
         <section className="manage-form-section">
           <h3>Homepage</h3>
+          <p className="manage-muted">
+            Carousel photos are managed separately under{' '}
+            <Link to="/manage/carousel">Carousel</Link>.
+          </p>
           <label className="manage-field">
             <span>Quote band</span>
             <input

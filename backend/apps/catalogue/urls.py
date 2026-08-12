@@ -5,6 +5,7 @@ from apps.catalogue.views import (
     BrandListView,
     CategoryListView,
     EnquiryCreateView,
+    HomepageSlideListView,
     ProductViewSet,
     SiteSettingView,
 )
@@ -17,5 +18,6 @@ urlpatterns = [
     path("categories/", CategoryListView.as_view(), name="category-list"),
     path("enquiries/", EnquiryCreateView.as_view(), name="enquiry-create"),
     path("settings/", SiteSettingView.as_view(), name="site-settings"),
+    path("carousel-slides/", HomepageSlideListView.as_view(), name="carousel-slide-list"),
     path("", include(router.urls)),
 ]

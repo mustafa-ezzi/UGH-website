@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 
 from apps.catalogue.models import Brand, Category, Product, ProductImage
-from apps.core.models import SiteSetting
+from apps.core.models import HomepageSlide, SiteSetting
 from apps.enquiries.models import Enquiry
 
 EDITOR_GROUP = "Editors"
@@ -27,6 +27,7 @@ class Command(BaseCommand):
             ProductImage,
             Enquiry,
             SiteSetting,
+            HomepageSlide,
         ]
         perms = []
         for model in models:

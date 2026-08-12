@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from apps.catalogue.models import Brand, Category, Product, ProductImage
 from apps.core.media import absolute_media_url
-from apps.core.models import SiteSetting
+from apps.core.models import HomepageSlide, SiteSetting
 from apps.enquiries.models import Enquiry
 
 
@@ -180,3 +180,36 @@ class ManageSiteSettingSerializer(serializers.ModelSerializer):
             "show_category_ribbon",
             "notify_enquiries_to",
         )
+
+
+class ManageHomepageSlideSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HomepageSlide
+        fields = (
+            "id",
+            "image",
+            "image_url",
+            "eyebrow",
+            "title",
+            "body",
+            "cta",
+            "href",
+            "sort_order",
+            "is_active",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("id", "image_url", "created_at", "updated_at")
+        extra_kwargs = {"image": {"write_only": True, "required": False}}
+
+    def get_image_url(self, obj):
+        if not obj.image:
+            return None
+        return absolute_media_url(obj.image.url, self.context.get("request"))
+
+    def validate(self, attrs):
+        if self.instance is None and not attrs.get("image"):
+            raise serializers.ValidationError({"image": "Choose a slide image."})
+        return attrs

@@ -21,12 +21,12 @@ export function AboutPage() {
   return (
     <div className="about">
       <section className="about-hero" aria-label="About hero">
-        <div
-          className="about-hero__media"
-          style={{ backgroundImage: `url(${PHOTOS.hero})` }}
-          role="img"
-          aria-label="UGH Appliances team reviewing kitchen appliances at an international trade fair"
-        />
+        <div className="about-hero__media">
+          <img
+            src={PHOTOS.hero}
+            alt="UGH Appliances team reviewing kitchen appliances at an international trade fair"
+          />
+        </div>
         <div className="about-hero__wash" aria-hidden="true" />
         <div className="about-hero__copy u-container">
           <p className="about-hero__brand">{siteName}</p>
@@ -78,12 +78,13 @@ export function AboutPage() {
       </section>
 
       <section className="about-band" aria-label="Partnership">
-        <div
-          className="about-band__media"
-          style={{ backgroundImage: `url(${PHOTOS.partnership})` }}
-          role="img"
-          aria-label="Handshake with an international appliance partner at Canton Fair"
-        />
+        <div className="about-band__media">
+          <img
+            src={PHOTOS.partnership}
+            alt="Handshake with an international appliance partner at Canton Fair"
+            loading="lazy"
+          />
+        </div>
         <div className="about-band__wash" aria-hidden="true" />
         <Reveal className="about-band__copy u-container">
           <p className="u-eyebrow" style={{ color: 'var(--ugh-flame)' }}>
@@ -97,7 +98,7 @@ export function AboutPage() {
         </Reveal>
       </section>
 
-      <section className="about-split about-split--reverse">
+      <section className="about-split about-split--reverse about-split--portrait">
         <Reveal className="about-split__media">
           <img
             src={PHOTOS.meeting}

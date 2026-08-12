@@ -6,6 +6,7 @@ from apps.catalogue.manage_views import (
     ManageCategoryViewSet,
     ManageDashboardView,
     ManageEnquiryViewSet,
+    ManageHomepageSlideViewSet,
     ManageProductImageView,
     ManageProductViewSet,
     ManageSiteSettingView,
@@ -17,6 +18,7 @@ router.register("brands", ManageBrandViewSet, basename="manage-brand")
 router.register("categories", ManageCategoryViewSet, basename="manage-category")
 router.register("products", ManageProductViewSet, basename="manage-product")
 router.register("enquiries", ManageEnquiryViewSet, basename="manage-enquiry")
+router.register("carousel-slides", ManageHomepageSlideViewSet, basename="manage-carousel-slide")
 
 urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="manage-login"),

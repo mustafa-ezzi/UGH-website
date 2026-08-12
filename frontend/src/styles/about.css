@@ -5,6 +5,7 @@
   color: var(--ugh-text-on-light);
 }
 
+/* —— Hero —— */
 .about-hero {
   position: relative;
   min-height: min(88vh, 52rem);
@@ -13,19 +14,27 @@
   align-items: end;
   overflow: hidden;
   color: var(--ugh-text-on-dark);
+  background: var(--ugh-void);
 }
 
 .about-hero__media {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center 28%;
+}
+
+.about-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 52% 32%;
+  display: block;
   transform: scale(1.02);
 }
 
 .about-hero__wash {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background:
     linear-gradient(180deg, rgba(10, 9, 8, 0.35) 0%, transparent 32%),
     linear-gradient(0deg, rgba(10, 9, 8, 0.88) 0%, rgba(10, 9, 8, 0.45) 42%, transparent 70%),
@@ -66,6 +75,7 @@
   line-height: 1.55;
 }
 
+/* —— Intro —— */
 .about-intro {
   padding: clamp(3.5rem, 8vw, 5.5rem) 0;
 }
@@ -90,6 +100,7 @@
   font-size: 1.05rem;
 }
 
+/* —— Split photo + copy —— */
 .about-split {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -106,15 +117,22 @@
 }
 
 .about-split__media {
+  position: relative;
   min-height: 22rem;
   overflow: hidden;
+  background: #1a1612;
 }
 
 .about-split__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 58% 40%;
   display: block;
+}
+
+.about-split--portrait .about-split__media img {
+  object-position: 50% 28%;
 }
 
 .about-split__copy {
@@ -148,6 +166,7 @@
   margin-top: 1.5rem;
 }
 
+/* —— Full-bleed band —— */
 .about-band {
   position: relative;
   min-height: min(78vh, 44rem);
@@ -155,18 +174,26 @@
   align-items: end;
   overflow: hidden;
   color: var(--ugh-text-on-dark);
+  background: var(--ugh-void);
 }
 
 .about-band__media {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center 35%;
+}
+
+.about-band__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 48% 42%;
+  display: block;
 }
 
 .about-band__wash {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background:
     linear-gradient(0deg, rgba(10, 9, 8, 0.9) 0%, rgba(10, 9, 8, 0.35) 48%, rgba(10, 9, 8, 0.2) 100%);
 }
@@ -193,6 +220,7 @@
   max-width: 34rem;
 }
 
+/* —— Close —— */
 .about-close {
   padding: clamp(3.5rem, 8vw, 5.5rem) 0;
 }
@@ -233,10 +261,71 @@
   color: var(--ugh-ember);
 }
 
+/* —— Tablet / mobile ——
+   Fair & partnership photos are ultra-wide panoramas; tall cover crops
+   destroy faces. On small screens: shorter full-bleed frames + copy below. */
 @media (max-width: 900px) {
   .about-hero {
-    min-height: 78vh;
-    min-height: 78dvh;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    color: var(--ugh-text-on-dark);
+  }
+
+  .about-hero__media {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    max-height: min(58dvh, 28rem);
+    flex-shrink: 0;
+  }
+
+  .about-hero__media img {
+    transform: none;
+    object-position: 55% 28%;
+  }
+
+  .about-hero__wash {
+    display: none;
+  }
+
+  .about-hero__copy {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 1.6rem var(--ugh-pad) 2rem;
+    background:
+      linear-gradient(180deg, rgba(196, 92, 38, 0.12), transparent 42%),
+      var(--ugh-ink);
+  }
+
+  .about-hero__brand {
+    font-size: clamp(1.85rem, 8.5vw, 2.45rem);
+    margin-bottom: 0.55rem;
+  }
+
+  .about-hero__title {
+    font-size: clamp(1.25rem, 5.2vw, 1.55rem);
+    max-width: none;
+  }
+
+  .about-hero__lede {
+    margin-top: 0.7rem;
+    font-size: 0.98rem;
+  }
+
+  .about-intro {
+    padding: 2.25rem 0 2.5rem;
+  }
+
+  .about-intro__title {
+    font-size: clamp(1.35rem, 5vw, 1.7rem);
+  }
+
+  .about-intro__body {
+    font-size: 1rem;
   }
 
   .about-split,
@@ -247,11 +336,100 @@
   }
 
   .about-split__media {
-    min-height: 16rem;
-    aspect-ratio: 4 / 3;
+    min-height: 0;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+  }
+
+  .about-split__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-position: 62% 38%;
+  }
+
+  .about-split--portrait .about-split__media {
+    aspect-ratio: 4 / 5;
+    max-height: min(70dvh, 32rem);
+  }
+
+  .about-split--portrait .about-split__media img {
+    object-position: 50% 22%;
+  }
+
+  .about-split__copy {
+    padding: 1.75rem var(--ugh-pad) 2.25rem;
+  }
+
+  .about-split__copy h2 {
+    font-size: clamp(1.4rem, 5.5vw, 1.75rem);
   }
 
   .about-band {
-    min-height: 70vh;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .about-band__media {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    max-height: min(56dvh, 26rem);
+    flex-shrink: 0;
+  }
+
+  .about-band__media img {
+    object-position: 46% 40%;
+  }
+
+  .about-band__wash {
+    display: none;
+  }
+
+  .about-band__copy {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 1.6rem var(--ugh-pad) 2.1rem;
+    background:
+      linear-gradient(180deg, rgba(196, 92, 38, 0.14), transparent 48%),
+      var(--ugh-ink);
+  }
+
+  .about-band__copy h2 {
+    font-size: clamp(1.45rem, 6vw, 1.85rem);
+  }
+
+  .about-band__copy p:last-child {
+    font-size: 0.98rem;
+  }
+
+  .about-close {
+    padding: 2.5rem 0 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero__media {
+    aspect-ratio: 4 / 3;
+    max-height: min(48dvh, 22rem);
+  }
+
+  .about-band__media {
+    aspect-ratio: 4 / 3;
+    max-height: min(46dvh, 20rem);
+  }
+
+  .about-split__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .about-split--portrait .about-split__media {
+    aspect-ratio: 3 / 4;
+    max-height: min(62dvh, 28rem);
   }
 }

@@ -79,3 +79,34 @@ class SiteSetting(models.Model):
     def load(cls) -> "SiteSetting":
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+
+class HomepageSlide(models.Model):
+    """Full-bleed homepage carousel (and matching story) slides."""
+
+    image = models.ImageField(
+        upload_to="carousel/",
+        validators=[validate_image_file],
+    )
+    eyebrow = models.CharField(max_length=80, blank=True, default="Just newly arrived")
+    title = models.CharField(max_length=160)
+    body = models.TextField(blank=True)
+    cta = models.CharField(max_length=80, blank=True, default="Discover more")
+    href = models.CharField(
+        max_length=200,
+        blank=True,
+        default="/catalogue",
+        help_text="Storefront path, e.g. /catalogue/ovens or /about",
+    )
+    sort_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name = "Homepage carousel slide"
+        verbose_name_plural = "Homepage carousel slides"
+
+    def __str__(self) -> str:
+        return self.title or f"Slide {self.pk}"

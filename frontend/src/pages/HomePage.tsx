@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useCategories, useProducts, useSettings } from '../api/hooks'
+import { useCategories, useCarouselSlides, useProducts, useSettings } from '../api/hooks'
 import { CinematicHero } from '../components/CinematicHero'
 import {
   KitchenLineCarousel,
@@ -75,6 +75,22 @@ export function HomePage() {
   const settings = useSettings()
   const categories = useCategories()
   const featured = useProducts({ featured: true })
+  const carousel = useCarouselSlides()
+
+  const storySlides: StorySlide[] =
+    carousel.data && carousel.data.length > 0
+      ? carousel.data
+          .filter((slide) => slide.image)
+          .map((slide) => ({
+            id: String(slide.id),
+            eyebrow: slide.eyebrow,
+            title: slide.title,
+            body: slide.body,
+            cta: slide.cta || 'Discover more',
+            href: slide.href || '/catalogue',
+            image: slide.image,
+          }))
+      : STORY_SLIDES
 
   const tagline = settings.data?.tagline ?? 'Precision born from heat.'
   const support =
@@ -108,9 +124,9 @@ export function HomePage() {
       />
 
       {/* 2) Kitchen Line–style photo world begins after hero */}
-      <KitchenLineCarousel slides={STORY_SLIDES} />
+      <KitchenLineCarousel slides={storySlides} />
 
-      <KitchenLineStory slides={STORY_SLIDES} />
+      <KitchenLineStory slides={storySlides} />
 
       <section className="kl-pillars">
         <article>

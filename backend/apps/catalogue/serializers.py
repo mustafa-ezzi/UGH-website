@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from apps.catalogue.models import Brand, Category, Product, ProductImage
 from apps.core.media import absolute_media_url
-from apps.core.models import SiteSetting
+from apps.core.models import HomepageSlide, SiteSetting
 from apps.enquiries.models import Enquiry
 
 
@@ -171,3 +171,25 @@ class SiteSettingSerializer(serializers.ModelSerializer):
         if not obj.hero_image:
             return None
         return absolute_media_url(obj.hero_image.url, self.context.get("request"))
+
+
+class HomepageSlideSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HomepageSlide
+        fields = (
+            "id",
+            "image",
+            "eyebrow",
+            "title",
+            "body",
+            "cta",
+            "href",
+            "sort_order",
+        )
+
+    def get_image(self, obj):
+        if not obj.image:
+            return None
+        return absolute_media_url(obj.image.url, self.context.get("request"))

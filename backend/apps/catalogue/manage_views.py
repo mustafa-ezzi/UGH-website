@@ -11,12 +11,13 @@ from apps.catalogue.manage_serializers import (
     ManageBrandSerializer,
     ManageCategorySerializer,
     ManageEnquirySerializer,
+    ManageHomepageSlideSerializer,
     ManageProductImageSerializer,
     ManageProductSerializer,
     ManageSiteSettingSerializer,
 )
 from apps.catalogue.models import Brand, Category, Product, ProductImage
-from apps.core.models import SiteSetting
+from apps.core.models import HomepageSlide, SiteSetting
 from apps.core.permissions import IsStaffUser
 from apps.enquiries.models import Enquiry
 
@@ -173,3 +174,14 @@ class ManageSiteSettingView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return SiteSetting.load()
+
+
+class ManageHomepageSlideViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsStaffUser]
+    serializer_class = ManageHomepageSlideSerializer
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+    queryset = HomepageSlide.objects.all()
+    pagination_class = None
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["title", "eyebrow", "body"]
+    ordering = ["sort_order", "id"]

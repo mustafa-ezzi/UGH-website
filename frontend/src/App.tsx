@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AdminLayout } from './admin/AdminLayout'
 import { RequireAuth } from './admin/RequireAuth'
 import { AdminBrandsPage } from './admin/pages/AdminBrandsPage'
+import { AdminCarouselPage } from './admin/pages/AdminCarouselPage'
 import { AdminCategoriesPage } from './admin/pages/AdminCategoriesPage'
 import { AdminDashboardPage } from './admin/pages/AdminDashboardPage'
 import { AdminEnquiriesPage } from './admin/pages/AdminEnquiriesPage'
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="brands" element={<AdminBrandsPage />} />
             <Route path="enquiries" element={<AdminEnquiriesPage />} />
+            <Route path="carousel" element={<AdminCarouselPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
         </Route>

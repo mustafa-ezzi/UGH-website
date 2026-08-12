@@ -1,5 +1,6 @@
 import type {
   Brand,
+  CarouselSlide,
   Category,
   EnquiryPayload,
   EnquiryResponse,
@@ -66,6 +67,10 @@ export function fetchBrands() {
 
 export function fetchSettings() {
   return request<SiteSettings>('/settings/')
+}
+
+export function fetchCarouselSlides() {
+  return request<CarouselSlide[]>('/carousel-slides/')
 }
 
 export function createEnquiry(payload: EnquiryPayload) {

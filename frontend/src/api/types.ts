@@ -96,6 +96,17 @@ export type EnquiryResponse = {
   created_at: string
 }
 
+export type CarouselSlide = {
+  id: number
+  image: string
+  eyebrow: string
+  title: string
+  body: string
+  cta: string
+  href: string
+  sort_order: number
+}
+
 export type ProductQuery = {
   category?: string
   brand?: string

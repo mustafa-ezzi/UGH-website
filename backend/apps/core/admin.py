@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from adminsortable2.admin import SortableAdminMixin
 
-from .models import SiteSetting
+from .models import HomepageSlide, SiteSetting
 
 
 @admin.register(SiteSetting)
@@ -30,6 +32,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
                 ),
                 "description": (
                     "Control homepage sections without a deploy. "
+                    "Carousel photos are managed under Homepage carousel slides. "
                     "Featured products are chosen per-product via the Featured flag."
                 ),
             },
@@ -68,3 +71,34 @@ class SiteSettingAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(HomepageSlide)
+class HomepageSlideAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("preview", "title", "eyebrow", "href", "is_active", "sort_order")
+    list_display_links = ("preview", "title")
+    list_editable = ("is_active",)
+    list_filter = ("is_active",)
+    search_fields = ("title", "eyebrow", "body")
+    ordering = ("sort_order", "id")
+    readonly_fields = ("preview",)
+    fields = (
+        "image",
+        "preview",
+        "eyebrow",
+        "title",
+        "body",
+        "cta",
+        "href",
+        "is_active",
+        "sort_order",
+    )
+
+    @admin.display(description="Image")
+    def preview(self, obj):
+        if obj.pk and obj.image:
+            return format_html(
+                '<img src="{}" style="max-height:72px;border-radius:4px;" />',
+                obj.image.url,
+            )
+        return "—"

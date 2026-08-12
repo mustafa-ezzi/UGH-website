@@ -8,6 +8,7 @@ const links = [
   { to: '/manage/categories', end: false, label: 'Categories' },
   { to: '/manage/brands', end: false, label: 'Brands' },
   { to: '/manage/enquiries', end: false, label: 'Enquiries' },
+  { to: '/manage/carousel', end: false, label: 'Carousel' },
   { to: '/manage/settings', end: false, label: 'Site settings' },
 ]
 

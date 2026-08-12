@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   createEnquiry,
   fetchBrands,
+  fetchCarouselSlides,
   fetchCategories,
   fetchProduct,
   fetchProducts,
@@ -42,6 +43,13 @@ export function useSettings() {
   return useQuery({
     queryKey: ['settings'],
     queryFn: fetchSettings,
+  })
+}
+
+export function useCarouselSlides() {
+  return useQuery({
+    queryKey: ['carousel-slides'],
+    queryFn: fetchCarouselSlides,
   })
 }
 
