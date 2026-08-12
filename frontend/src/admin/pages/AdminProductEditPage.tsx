@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type FormEvent, useEffect, useState } from 'react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   createManageProduct,
@@ -30,6 +30,7 @@ const emptyForm = {
 }
 
 type SpecRow = { key: string; value: string }
+type PendingImage = { id: string; file: File; preview: string }
 
 export function AdminProductEditPage() {
   const { id } = useParams()
@@ -51,8 +52,13 @@ export function AdminProductEditPage() {
 
   const [form, setForm] = useState(emptyForm)
   const [specs, setSpecs] = useState<SpecRow[]>([{ key: '', value: '' }])
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const pendingInputRef = useRef<HTMLInputElement>(null)
+  const existingInputRef = useRef<HTMLInputElement>(null)
+  const pendingImagesRef = useRef<PendingImage[]>([])
+  pendingImagesRef.current = pendingImages
 
   useEffect(() => {
     if (product.data) {
@@ -76,6 +82,12 @@ export function AdminProductEditPage() {
     }
   }, [product.data, brands.data, isNew, form.brand])
 
+  useEffect(() => {
+    return () => {
+      pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.preview))
+    }
+  }, [])
+
   const save = useMutation({
     mutationFn: async () => {
       const specObj: Record<string, string> = {}
@@ -96,15 +108,33 @@ export function AdminProductEditPage() {
         sort_order: form.sort_order,
         specs: specObj,
       }
-      if (isNew) return createManageProduct(payload)
-      return updateManageProduct(productId!, payload)
+      const saved = isNew ? await createManageProduct(payload) : await updateManageProduct(productId!, payload)
+      let uploadError = ''
+      const toUpload = pendingImagesRef.current
+      if (isNew && toUpload.length) {
+        const failed: string[] = []
+        for (const item of toUpload) {
+          try {
+            await uploadProductImage(saved.id, item.file)
+          } catch {
+            failed.push(item.file.name)
+          }
+        }
+        if (failed.length) {
+          uploadError = `Product saved, but these images failed: ${failed.join(', ')}`
+        }
+      }
+      return { saved, uploadError, uploadedCount: isNew ? toUpload.length : 0 }
     },
-    onSuccess: (data) => {
+    onSuccess: ({ saved, uploadError, uploadedCount }) => {
       void queryClient.invalidateQueries({ queryKey: ['manage-products'] })
       void queryClient.invalidateQueries({ queryKey: ['manage-dashboard'] })
-      setMessage('Saved.')
-      if (isNew) navigate(`/manage/products/${data.id}`, { replace: true })
-      else void queryClient.invalidateQueries({ queryKey: ['manage-product', data.id] })
+      pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.preview))
+      setPendingImages([])
+      if (uploadError) setError(uploadError)
+      else setMessage(uploadedCount ? 'Product and images saved.' : 'Saved.')
+      if (isNew) navigate(`/manage/products/${saved.id}`, { replace: true })
+      else void queryClient.invalidateQueries({ queryKey: ['manage-product', saved.id] })
     },
     onError: (err: Error) => setError(err.message),
   })
@@ -124,16 +154,44 @@ export function AdminProductEditPage() {
     save.mutate()
   }
 
-  async function onUpload(file: File | null) {
-    if (!file || !productId) return
-    setError('')
-    try {
-      await uploadProductImage(productId, file)
-      void queryClient.invalidateQueries({ queryKey: ['manage-product', productId] })
-      setMessage('Image uploaded.')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed')
+  function addPendingFiles(fileList: FileList | null) {
+    if (!fileList?.length) return
+    const next: PendingImage[] = []
+    for (const file of Array.from(fileList)) {
+      if (!file.type.startsWith('image/')) continue
+      next.push({
+        id: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
+        file,
+        preview: URL.createObjectURL(file),
+      })
     }
+    if (next.length) setPendingImages((prev) => [...prev, ...next])
+    if (pendingInputRef.current) pendingInputRef.current.value = ''
+  }
+
+  function removePendingImage(id: string) {
+    setPendingImages((prev) => {
+      const target = prev.find((img) => img.id === id)
+      if (target) URL.revokeObjectURL(target.preview)
+      return prev.filter((img) => img.id !== id)
+    })
+  }
+
+  async function onUpload(files: FileList | null) {
+    if (!files?.length || !productId) return
+    setError('')
+    const failed: string[] = []
+    for (const file of Array.from(files)) {
+      try {
+        await uploadProductImage(productId, file)
+      } catch {
+        failed.push(file.name)
+      }
+    }
+    void queryClient.invalidateQueries({ queryKey: ['manage-product', productId] })
+    if (existingInputRef.current) existingInputRef.current.value = ''
+    if (failed.length) setError(`Could not upload: ${failed.join(', ')}`)
+    else setMessage(files.length > 1 ? 'Images uploaded.' : 'Image uploaded.')
   }
 
   async function moveImage(imageId: number, dir: -1 | 1) {
@@ -351,9 +409,48 @@ export function AdminProductEditPage() {
           </div>
         </section>
 
+        {isNew ? (
+          <section className="manage-images manage-form-section">
+            <h3>Images</h3>
+            <p className="manage-muted">
+              Choose one or more photos now. They upload when you save the product. The first image
+              becomes the catalogue thumbnail.
+            </p>
+            {pendingImages.length ? (
+              <div className="manage-images__grid">
+                {pendingImages.map((img) => (
+                  <figure key={img.id}>
+                    <img src={img.preview} alt={img.file.name} />
+                    <figcaption className="manage-muted">{img.file.name}</figcaption>
+                    <div className="manage-images__tools">
+                      <button
+                        type="button"
+                        className="manage-btn manage-btn--ghost"
+                        onClick={() => removePendingImage(img.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </figure>
+                ))}
+              </div>
+            ) : null}
+            <label className="manage-field">
+              <span>Add images</span>
+              <input
+                ref={pendingInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => addPendingFiles(e.target.files)}
+              />
+            </label>
+          </section>
+        ) : null}
+
         <div className="manage-form__actions">
           <button type="submit" className="manage-btn manage-btn--primary" disabled={save.isPending}>
-            {save.isPending ? 'Saving…' : 'Save product'}
+            {save.isPending ? 'Saving…' : isNew ? 'Save product & images' : 'Save product'}
           </button>
           {!isNew ? (
             <button
@@ -408,17 +505,17 @@ export function AdminProductEditPage() {
               ))}
           </div>
           <label className="manage-field">
-            <span>Upload image</span>
+            <span>Upload images</span>
             <input
+              ref={existingInputRef}
               type="file"
               accept="image/*"
-              onChange={(e) => void onUpload(e.target.files?.[0] ?? null)}
+              multiple
+              onChange={(e) => void onUpload(e.target.files)}
             />
           </label>
         </section>
-      ) : (
-        <p className="manage-muted">Save the product first to upload images.</p>
-      )}
+      ) : null}
     </div>
   )
 }

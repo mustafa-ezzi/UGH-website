@@ -597,6 +597,13 @@
   border-radius: 0.25rem;
 }
 
+.manage-images figcaption {
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .manage-images__tools {
   display: flex;
   flex-wrap: wrap;
