@@ -16,11 +16,13 @@ A **catalogue-first** kitchen appliances site where the first scroll feels like 
 
 ## 2. What we take from each reference
 
-| Source | Steal this | Adapt for appliances |
-|--------|------------|----------------------|
-| **[Taheri.shop](https://taheri.shop/)** | Full-viewport cinematic first page; scroll-driven story; floating dust / particle field; brand as hero; “Scroll” cue; dark atmospheric void → product reveal | Dust becomes warm kitchen light motes / stainless sparkle / steam-like particles; headline e.g. *“Formed in fire.”* / *“Precision born from heat.”*; hero object = stove / hob / oven silhouette (2D sequence or lightweight 3D), not jewellery |
-| **[Smeg UK](https://www.smeguk.com/)** | Large editorial photography; calm luxury spacing; product-as-hero sections; mega-nav by category; “Technology with Style” tone; full-bleed lifestyle + product shots; soft motion on section enter | Same quiet confidence: ovens, hobs, chimneys, sinks as lifestyle heroes; no cluttered promo chips on hero |
-| **[Kitchen Line](https://kitchenline.com/)** | Kitchen-world theme; hero slider energy; showroom / “shop by category”; warm appliance lifestyle backgrounds; parallax / background scroll feel; catalogue storytelling (hobs, hoods, ovens, sinks) | One continuous scroll narrative instead of noisy multi-slider hero; keep category depth and showroom vibe |
+
+| Source                                       | Steal this                                                                                                                                                                                          | Adapt for appliances                                                                                                                                                                                                                            |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[Taheri.shop](https://taheri.shop/)**      | Full-viewport cinematic first page; scroll-driven story; floating dust / particle field; brand as hero; “Scroll” cue; dark atmospheric void → product reveal                                        | Dust becomes warm kitchen light motes / stainless sparkle / steam-like particles; headline e.g. *“Formed in fire.”* / *“Precision born from heat.”*; hero object = stove / hob / oven silhouette (2D sequence or lightweight 3D), not jewellery |
+| **[Smeg UK](https://www.smeguk.com/)**       | Large editorial photography; calm luxury spacing; product-as-hero sections; mega-nav by category; “Technology with Style” tone; full-bleed lifestyle + product shots; soft motion on section enter  | Same quiet confidence: ovens, hobs, chimneys, sinks as lifestyle heroes; no cluttered promo chips on hero                                                                                                                                       |
+| **[Kitchen Line](https://kitchenline.com/)** | Kitchen-world theme; hero slider energy; showroom / “shop by category”; warm appliance lifestyle backgrounds; parallax / background scroll feel; catalogue storytelling (hobs, hoods, ovens, sinks) | One continuous scroll narrative instead of noisy multi-slider hero; keep category depth and showroom vibe                                                                                                                                       |
+
 
 ### Explicit non-goals (from your brief)
 
@@ -79,12 +81,14 @@ Kitchen Line warmth + Smeg steel + Taheri cinematic dark for hero only.
 
 Do **not** use Inter / Roboto / Arial / system-only stacks.
 
-| Role | Direction | Examples to license / self-host |
-|------|-----------|----------------------------------|
-| Display / brand | Expressive geometric or refined grotesque | **Satoshi**, **Cabinet Grotesk**, **PP Neue Montreal**, or **Clash Display** |
-| Editorial headlines | Slight contrast or high-end sans | **Instrument Sans**, **General Sans**, **Switzer** |
-| Body | Highly readable sans | **Satoshi** / **Geist** alternative: **Manrope** only if needed |
-| Micro labels | Wide tracking uppercase | Same family, 0.12–0.2em letter-spacing |
+
+| Role                | Direction                                 | Examples to license / self-host                                              |
+| ------------------- | ----------------------------------------- | ---------------------------------------------------------------------------- |
+| Display / brand     | Expressive geometric or refined grotesque | **Satoshi**, **Cabinet Grotesk**, **PP Neue Montreal**, or **Clash Display** |
+| Editorial headlines | Slight contrast or high-end sans          | **Instrument Sans**, **General Sans**, **Switzer**                           |
+| Body                | Highly readable sans                      | **Satoshi** / **Geist** alternative: **Manrope** only if needed              |
+| Micro labels        | Wide tracking uppercase                   | Same family, 0.12–0.2em letter-spacing                                       |
+
 
 ### 3.4 Imagery rules (Smeg + Kitchen Line)
 
@@ -96,11 +100,11 @@ Do **not** use Inter / Roboto / Arial / system-only stacks.
 
 ### 3.5 Layout principles (your design rules + refs)
 
-1. First viewport = **one composition**: brand + one headline + one line + scroll cue + dominant visual  
-2. Brand must remain hero-level (Taheri test: remove nav → still unmistakably UGH)  
-3. **One job per section**  
-4. **Default: no cards** — cards only when interaction needs a container (filters, admin forms)  
-5. Motion creates hierarchy, not noise — ship **2–3 signature motions** + supporting micro-interactions  
+1. First viewport = **one composition**: brand + one headline + one line + scroll cue + dominant visual
+2. Brand must remain hero-level (Taheri test: remove nav → still unmistakably UGH)
+3. **One job per section**
+4. **Default: no cards** — cards only when interaction needs a container (filters, admin forms)
+5. Motion creates hierarchy, not noise — ship **2–3 signature motions** + supporting micro-interactions
 
 ---
 
@@ -108,13 +112,15 @@ Do **not** use Inter / Roboto / Arial / system-only stacks.
 
 ### 4.1 Recommended animation stack (better than “React alone”)
 
-| Layer | Library | Why |
-|-------|---------|-----|
-| Smooth scroll | **Lenis** | Buttery scroll physics like luxury jewellery sites |
-| Scroll choreography | **GSAP + ScrollTrigger** (+ `@gsap/react`) | Industry standard for pinned sections, scrub timelines |
-| Magical dust / 3D depth | **Three.js + React Three Fiber + Drei** | Taheri-like particle field, light shafts, metallic product silhouette |
-| UI micro-motion | **Framer Motion** (or Motion One) | Page transitions, filter drawer, hover fades — keep light |
-| Optional image sequences | Canvas frame scrub | If we shoot/render appliance “forming” frames like jewellery sites |
+
+| Layer                    | Library                                    | Why                                                                   |
+| ------------------------ | ------------------------------------------ | --------------------------------------------------------------------- |
+| Smooth scroll            | **Lenis**                                  | Buttery scroll physics like luxury jewellery sites                    |
+| Scroll choreography      | **GSAP + ScrollTrigger** (+ `@gsap/react`) | Industry standard for pinned sections, scrub timelines                |
+| Magical dust / 3D depth  | **Three.js + React Three Fiber + Drei**    | Taheri-like particle field, light shafts, metallic product silhouette |
+| UI micro-motion          | **Framer Motion** (or Motion One)          | Page transitions, filter drawer, hover fades — keep light             |
+| Optional image sequences | Canvas frame scrub                         | If we shoot/render appliance “forming” frames like jewellery sites    |
+
 
 **Decision:** Stay on **React + Vite** for the storefront. Do **not** switch to Next unless SEO becomes Phase-2 priority; for catalogue + cinematic hero, Vite + R3F is ideal. Django remains the API/admin brain.
 
@@ -122,35 +128,37 @@ Do **not** use Inter / Roboto / Arial / system-only stacks.
 
 **Structure:** ~5–7 pinned / scrubbed chapters inside one continuous scroll experience, then hand off to “normal” Smeg-style catalogue sections.
 
-| Chapter | Scroll % (approx) | Visual | Copy |
-|---------|-------------------|--------|------|
-| 0 — Void | 0–10% | Dark field, floating dust (warm ember + steel sparks) | Brand mark fades in |
-| 1 — Birth | 10–28% | Particles coalesce toward center | *Precision born from heat.* |
-| 2 — Form | 28–48% | Silhouette of hob / range resolves from dust (shader or GLB) | Category whisper: Stoves · Chimneys · Ovens · Basins |
-| 3 — Material | 48–65% | Camera orbit / light sweep across brushed steel | Short supporting line only |
-| 4 — Reveal | 65–82% | Lifestyle kitchen plate fades in (Kitchen Line ambience) | CTA: *Explore the catalogue* |
-| 5 — Release | 82–100% | Unpin → scroll into Smeg-style category strip | Nav becomes solid |
+
+| Chapter      | Scroll % (approx) | Visual                                                       | Copy                                                 |
+| ------------ | ----------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| 0 — Void     | 0–10%             | Dark field, floating dust (warm ember + steel sparks)        | Brand mark fades in                                  |
+| 1 — Birth    | 10–28%            | Particles coalesce toward center                             | *Precision born from heat.*                          |
+| 2 — Form     | 28–48%            | Silhouette of hob / range resolves from dust (shader or GLB) | Category whisper: Stoves · Chimneys · Ovens · Basins |
+| 3 — Material | 48–65%            | Camera orbit / light sweep across brushed steel              | Short supporting line only                           |
+| 4 — Reveal   | 65–82%            | Lifestyle kitchen plate fades in (Kitchen Line ambience)     | CTA: *Explore the catalogue*                         |
+| 5 — Release  | 82–100%           | Unpin → scroll into Smeg-style category strip                | Nav becomes solid                                    |
+
 
 **Technical approach:**
 
-1. Fixed full-viewport `<Canvas>` (R3F) behind HTML overlay  
-2. Lenis scroll progress → GSAP timeline `seek()` (or ScrollTrigger scrub)  
-3. Particle system: `Points` / custom shader — dust rises, drifts with slight turbulence, responds to scroll velocity  
-4. Reduced motion: `@media (prefers-reduced-motion: reduce)` → static hero + fade, no scrub  
-5. Mobile: lower particle count, DPR cap `Math.min(devicePixelRatio, 1.5)`, optional 2D fallback sequence  
+1. Fixed full-viewport `<Canvas>` (R3F) behind HTML overlay
+2. Lenis scroll progress → GSAP timeline `seek()` (or ScrollTrigger scrub)
+3. Particle system: `Points` / custom shader — dust rises, drifts with slight turbulence, responds to scroll velocity
+4. Reduced motion: `@media (prefers-reduced-motion: reduce)` → static hero + fade, no scrub
+5. Mobile: lower particle count, DPR cap `Math.min(devicePixelRatio, 1.5)`, optional 2D fallback sequence
 
 ### 4.3 Signature motions (must ship)
 
-1. **Hero particle coalescence** (Taheri DNA)  
-2. **Section enter:** headline clip-reveal + image parallax 8–12% (Smeg calm)  
-3. **Category hover:** soft steel sheen / image scale 1.04 + underline draw  
+1. **Hero particle coalescence** (Taheri DNA)
+2. **Section enter:** headline clip-reveal + image parallax 8–12% (Smeg calm)
+3. **Category hover:** soft steel sheen / image scale 1.04 + underline draw
 
 Supporting (not competing):
 
 - Page transition: 300–500ms opacity + slight Y  
 - Sticky header: blur + hairline after leaving hero  
 - Product image crossfade on gallery  
-- Admin: no cinematic effects — crisp, fast CRUD only  
+- Admin: no cinematic effects — crisp, fast CRUD only
 
 ### 4.4 Kitchen Line “background scroll” translation
 
@@ -158,17 +166,19 @@ After the cinematic hero:
 
 - Full-bleed lifestyle bands with **background-attachment / parallax layers** (GSAP scrub, not CSS `fixed` only — better control)  
 - Category chapters: *Hobs · Hoods · Ovens · Sinks & Basins · Hardware* with one dominant image each  
-- Optional virtual showroom teaser section (static map / branch list later)  
+- Optional virtual showroom teaser section (static map / branch list later)
 
 ### 4.5 Performance budgets
 
-| Metric | Target |
-|--------|--------|
-| LCP (catalogue pages) | < 2.5s on mid broadband |
-| Hero JS main-thread | Idle particles ≤ ~8k desktop / ≤ ~2.5k mobile |
-| Texture sizes | WebP/AVIF; hero ≤ ~400–600KB |
-| Frame rate | 60fps desktop, 30–60 mobile with DPR clamp |
-| Bundle | Route-split 3D hero so catalogue pages don’t load full R3F unless needed |
+
+| Metric                | Target                                                                   |
+| --------------------- | ------------------------------------------------------------------------ |
+| LCP (catalogue pages) | < 2.5s on mid broadband                                                  |
+| Hero JS main-thread   | Idle particles ≤ ~8k desktop / ≤ ~2.5k mobile                            |
+| Texture sizes         | WebP/AVIF; hero ≤ ~400–600KB                                             |
+| Frame rate            | 60fps desktop, 30–60 mobile with DPR clamp                               |
+| Bundle                | Route-split 3D hero so catalogue pages don’t load full R3F unless needed |
+
 
 ---
 
@@ -176,35 +186,39 @@ After the cinematic hero:
 
 ### 5.1 Public pages
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Cinematic hero + category story + featured products |
-| `/catalogue` | All products, filters (category, brand, finish, fuel type) |
-| `/catalogue/:category` | Category landing (Smeg mega-feel, Kitchen Line themes) |
-| `/product/:slug` | Detail: gallery, specs, price (display only), enquiry CTA |
-| `/brands` | Brand grid |
-| `/about` | Brand story |
-| `/contact` | Enquiry / showroom / WhatsApp / email |
-| `/showrooms` (optional) | Locations — Kitchen Line inspired |
+
+| Route                   | Purpose                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `/`                     | Cinematic hero + category story + featured products        |
+| `/catalogue`            | All products, filters (category, brand, finish, fuel type) |
+| `/catalogue/:category`  | Category landing (Smeg mega-feel, Kitchen Line themes)     |
+| `/product/:slug`        | Detail: gallery, specs, price (display only), enquiry CTA  |
+| `/brands`               | Brand grid                                                 |
+| `/about`                | Brand story                                                |
+| `/contact`              | Enquiry / showroom / WhatsApp / email                      |
+| `/showrooms` (optional) | Locations — Kitchen Line inspired                          |
+
 
 **CTAs allowed:** Enquire · Call · WhatsApp · Visit showroom · Download brochure (PDF)  
 **CTAs forbidden:** Add to cart · Buy now · Checkout · Payment  
 
 ### 5.2 Admin (Django Admin or custom React admin)
 
-| Capability | Priority |
-|------------|----------|
-| Products CRUD | P0 |
-| Price create/edit (display) | P0 |
-| Categories / subcategories | P0 |
-| Image upload (multi) + order | P0 |
-| Brands | P0 |
-| Featured / sort order / publish toggle | P0 |
-| Specs (JSON or key-value) | P1 |
-| SEO fields (title, meta, OG) | P1 |
-| Enquiry inbox view | P1 |
-| Soft delete / archive | P1 |
-| Staff roles (Admin / Editor) | P2 |
+
+| Capability                             | Priority |
+| -------------------------------------- | -------- |
+| Products CRUD                          | P0       |
+| Price create/edit (display)            | P0       |
+| Categories / subcategories             | P0       |
+| Image upload (multi) + order           | P0       |
+| Brands                                 | P0       |
+| Featured / sort order / publish toggle | P0       |
+| Specs (JSON or key-value)              | P1       |
+| SEO fields (title, meta, OG)           | P1       |
+| Enquiry inbox view                     | P1       |
+| Soft delete / archive                  | P1       |
+| Staff roles (Admin / Editor)           | P2       |
+
 
 ---
 
@@ -232,7 +246,7 @@ After the cinematic hero:
 - `Product` — name, slug, brand, categories M2M, SKU, price, currency, short_desc, long_desc, specs JSON, is_featured, is_published, sort_order  
 - `ProductImage` — product FK, image, alt, sort  
 - `Enquiry` — name, phone, email, message, product FK nullable, created_at  
-- `SiteSetting` — hero copy, contact, socials (singleton)  
+- `SiteSetting` — hero copy, contact, socials (singleton)
 
 ### 6.2 API surface (Phase 1)
 
@@ -276,18 +290,18 @@ UGH-Website/
 
 ### 7.1 Home
 
-1. **Cinematic hero** (Taheri) — particles, brand, one line, scroll  
-2. **Category ribbon** — 4–5 categories, full-bleed hover images (Kitchen Line themes)  
-3. **Featured appliances** — Smeg editorial: large product + short copy, no card chrome  
-4. **Craft band** — parallax kitchen background + one sentence brand promise  
-5. **Enquiry strip** — single CTA  
-6. **Footer** — minimal, steel hairlines  
+1. **Cinematic hero** (Taheri) — particles, brand, one line, scroll
+2. **Category ribbon** — 4–5 categories, full-bleed hover images (Kitchen Line themes)
+3. **Featured appliances** — Smeg editorial: large product + short copy, no card chrome
+4. **Craft band** — parallax kitchen background + one sentence brand promise
+5. **Enquiry strip** — single CTA
+6. **Footer** — minimal, steel hairlines
 
 ### 7.2 Catalogue
 
 - Sticky filter rail (desktop) / bottom sheet (mobile)  
 - Grid: image-dominant, name, brand, price as text (not buy button)  
-- Hover: slow zoom + steel underline “View”  
+- Hover: slow zoom + steel underline “View”
 
 ### 7.3 Product detail
 
@@ -295,13 +309,13 @@ UGH-Website/
 - Specs table  
 - Price display  
 - Related products  
-- Primary: **Enquire about this product**  
+- Primary: **Enquire about this product**
 
 ### 7.4 Admin
 
 - Dense, light UI (not cinematic)  
 - List + edit forms, image reorder, publish toggle  
-- Preview link to storefront slug  
+- Preview link to storefront slug
 
 ---
 
@@ -345,7 +359,7 @@ Each phase ends with a **Definition of Done**. Estimated fidelity to final visio
 
 **DoD:** Admin can create/edit/delete/publish products and change prices; API returns published catalogue only.
 
-**Accuracy contribution:** ~35% cumulative
+**Accuracy contribution:** ~35% cumulativej
 
 ---
 
@@ -446,14 +460,16 @@ Each phase ends with a **Definition of Done**. Estimated fidelity to final visio
 
 ## 9. Accuracy & risk matrix
 
-| Area | Target accuracy | Risk | Mitigation |
-|------|-----------------|------|------------|
-| Visual fusion (3 sites) | 90–95% | Looking like a clone of one only | Strict section ownership: Hero=Taheri, Ambience=Smeg, Theme bands=Kitchen Line |
-| Hero animation | 92–98% | Perf on low-end phones | DPR clamp, particle LOD, reduced-motion static |
-| Catalogue UX | 95–100% | Scope creep into e-commerce | Hard ban on cart/checkout in PR checklist |
-| Admin CRUD | 95–100% | Custom admin overbuilt | Start Django Admin; custom only if blocked |
-| Brand typography/color | 90–95% | Generic AI aesthetic | Locked tokens in Section 3; design review gate Phase 2 |
-| Content/photography | 80–100% | Depends on assets you provide | Use placeholders until real kitchen shots arrive |
+
+| Area                    | Target accuracy | Risk                             | Mitigation                                                                     |
+| ----------------------- | --------------- | -------------------------------- | ------------------------------------------------------------------------------ |
+| Visual fusion (3 sites) | 90–95%          | Looking like a clone of one only | Strict section ownership: Hero=Taheri, Ambience=Smeg, Theme bands=Kitchen Line |
+| Hero animation          | 92–98%          | Perf on low-end phones           | DPR clamp, particle LOD, reduced-motion static                                 |
+| Catalogue UX            | 95–100%         | Scope creep into e-commerce      | Hard ban on cart/checkout in PR checklist                                      |
+| Admin CRUD              | 95–100%         | Custom admin overbuilt           | Start Django Admin; custom only if blocked                                     |
+| Brand typography/color  | 90–95%          | Generic AI aesthetic             | Locked tokens in Section 3; design review gate Phase 2                         |
+| Content/photography     | 80–100%         | Depends on assets you provide    | Use placeholders until real kitchen shots arrive                               |
+
 
 **Overall plan confidence:** **~94%** that following these phases yields the intended fused experience, contingent on quality product imagery and one solid appliance 3D/sequence asset for the hero.
 
@@ -473,14 +489,14 @@ Each phase ends with a **Definition of Done**. Estimated fidelity to final visio
 
 ## 11. Success criteria (final acceptance)
 
-1. First viewport passes the **brand test** (recognizable as UGH without nav).  
-2. First scroll feels **magical / particle-driven** like Taheri, but appliance-themed.  
-3. Below-the-fold feels **Smeg-calm and editorial**, not busy retail.  
-4. Category storytelling and kitchen atmosphere echo **Kitchen Line**.  
-5. Users can browse full catalogue and enquire — **never** cart/checkout.  
-6. Admin can CRUD products and change prices without developer help.  
-7. Motions respect `prefers-reduced-motion`.  
-8. Desktop hero holds ~60fps; mobile remains smooth with LOD.  
+1. First viewport passes the **brand test** (recognizable as UGH without nav).
+2. First scroll feels **magical / particle-driven** like Taheri, but appliance-themed.
+3. Below-the-fold feels **Smeg-calm and editorial**, not busy retail.
+4. Category storytelling and kitchen atmosphere echo **Kitchen Line**.
+5. Users can browse full catalogue and enquire — **never** cart/checkout.
+6. Admin can CRUD products and change prices without developer help.
+7. Motions respect `prefers-reduced-motion`.
+8. Desktop hero holds ~60fps; mobile remains smooth with LOD.
 
 ---
 
@@ -497,22 +513,24 @@ When you say go, we start Phase 0 in this repo (`d:\UG Appliences\UG-Website`).
 - Hero: *Precision born from heat.*  
 - Support: *Stoves, chimneys, ovens, and basins — crafted for kitchens that mean something.*  
 - Categories: Stoves & Hobs · Chimneys & Hoods · Ovens · Sinks & Basins · Hardware  
-- Enquiry: *Ask about this piece — our team will respond with availability and guidance.*  
+- Enquiry: *Ask about this piece — our team will respond with availability and guidance.*
 
 ## Appendix B — Reference links
 
-- https://taheri.shop/  
-- https://www.smeguk.com/  
-- https://kitchenline.com/  
+- [https://taheri.shop/](https://taheri.shop/)  
+- [https://www.smeguk.com/](https://www.smeguk.com/)  
+- [https://kitchenline.com/](https://kitchenline.com/)
 
 ## Appendix C — Why not other frameworks?
 
-| Option | Verdict |
-|--------|---------|
-| Next.js | Better SEO later; heavier for R3F hero. Revisit Phase 6+ if organic search is critical. |
-| Plain CSS animations | Insufficient for Taheri-level scrub. |
-| Only Framer Motion | Great micro-UI; weak for scroll-pinned cinematic timelines → pair with GSAP. |
-| Webflow | Beautiful but poor fit for Django catalogue admin + custom particle hero. |
-| Django templates only | Cannot reach Taheri/Smeg motion fidelity. |
+
+| Option                | Verdict                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| Next.js               | Better SEO later; heavier for R3F hero. Revisit Phase 6+ if organic search is critical. |
+| Plain CSS animations  | Insufficient for Taheri-level scrub.                                                    |
+| Only Framer Motion    | Great micro-UI; weak for scroll-pinned cinematic timelines → pair with GSAP.            |
+| Webflow               | Beautiful but poor fit for Django catalogue admin + custom particle hero.               |
+| Django templates only | Cannot reach Taheri/Smeg motion fidelity.                                               |
+
 
 **Final stack call:** Django + DRF + React/Vite + Lenis + GSAP + R3F.
