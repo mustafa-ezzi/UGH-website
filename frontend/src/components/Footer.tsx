@@ -21,6 +21,19 @@ export function Footer() {
           © {new Date().getFullYear()} {settings?.site_name ?? 'UGH Appliances'}.{' '}
           {settings?.tagline ?? 'Precision born from heat.'}
         </p>
+        <div className="site-footer__credit">
+          <p>© {new Date().getFullYear()} SAMS Enterprises</p>
+          <p>
+            Designed by{' '}
+            <a
+              href="https://www.trisitesolutions.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Trisite Solutions
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   )

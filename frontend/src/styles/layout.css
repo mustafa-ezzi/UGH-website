@@ -130,6 +130,30 @@
   border-top: 1px solid var(--ugh-hairline);
 }
 
+.site-footer__credit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ugh-hairline);
+  font-size: 0.72rem;
+  color: var(--ugh-steel);
+}
+
+.site-footer__credit a {
+  color: var(--ugh-brass);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer__credit a:hover {
+  color: var(--ugh-ember);
+}
+
 .layout {
   min-height: 100vh;
   display: flex;
