@@ -2,6 +2,7 @@ import { useSettings } from '../api/hooks'
 import { EnquiryForm } from '../components/EnquiryForm'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
+import { buildWhatsAppUrl } from '../lib/format'
 
 export function ContactPage() {
   const settings = useSettings()
@@ -37,7 +38,18 @@ export function ContactPage() {
               {settings.data?.whatsapp ? (
                 <li>
                   <span>WhatsApp</span>
-                  <span>{settings.data.whatsapp}</span>
+                  <a
+                    href={
+                      buildWhatsAppUrl(
+                        settings.data.whatsapp,
+                        `Hello ${settings.data.site_name ?? 'UGH Appliances'}, I would like to make an enquiry.`,
+                      ) ?? undefined
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {settings.data.whatsapp}
+                  </a>
                 </li>
               ) : null}
               {settings.data?.address ? (

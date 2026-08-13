@@ -163,7 +163,11 @@ export function ProductPage() {
         </div>
 
         <Reveal delay={0.1} className="product-detail__enquire">
-          <EnquiryForm productSlug={product.slug} productName={product.name} />
+          <EnquiryForm
+            productSlug={product.slug}
+            productName={product.name}
+            productSku={product.sku || undefined}
+          />
         </Reveal>
 
         {relatedItems.length > 0 ? (

@@ -20,3 +20,22 @@ export function mediaUrl(path: string | null | undefined): string | null {
   if (path.startsWith('http://') || path.startsWith('https://')) return path
   return path
 }
+
+/** Digits only for wa.me — keep country code, drop spaces/+/-/() */
+export function whatsappDigits(phone: string | null | undefined): string {
+  if (!phone) return ''
+  return phone.replace(/\D/g, '')
+}
+
+/** Build a WhatsApp click-to-chat URL with optional prefilled text. */
+export function buildWhatsAppUrl(
+  phone: string | null | undefined,
+  text: string,
+): string | null {
+  const digits = whatsappDigits(phone)
+  if (!digits) return null
+  const encoded = encodeURIComponent(text.trim())
+  return encoded
+    ? `https://wa.me/${digits}?text=${encoded}`
+    : `https://wa.me/${digits}`
+}

@@ -1,39 +1,66 @@
 import { useState, type FormEvent } from 'react'
-import { useCreateEnquiry } from '../api/hooks'
+import { useSettings } from '../api/hooks'
+import { buildWhatsAppUrl } from '../lib/format'
 
 type EnquiryFormProps = {
   productSlug?: string
   productName?: string
+  productSku?: string
 }
 
-export function EnquiryForm({ productSlug, productName }: EnquiryFormProps) {
-  const mutation = useCreateEnquiry()
+function defaultMessage(productName?: string) {
+  if (productName) {
+    return `I would like more information about ${productName} — availability, price, and finishes.`
+  }
+  return 'I would like more information about your appliances — availability and guidance.'
+}
+
+export function EnquiryForm({ productSlug, productName, productSku }: EnquiryFormProps) {
+  const settings = useSettings()
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState(
-    productName ? `I would like more information about ${productName}.` : '',
-  )
+  const [message, setMessage] = useState(defaultMessage(productName))
+  const [error, setError] = useState('')
 
   function onSubmit(event: FormEvent) {
     event.preventDefault()
-    mutation.mutate({
-      name: name.trim(),
-      email: email.trim() || undefined,
-      phone: phone.trim() || undefined,
-      message: message.trim(),
-      product_slug: productSlug,
-    })
-  }
+    setError('')
 
-  if (mutation.isSuccess) {
-    return (
-      <div className="enquiry-form enquiry-form--success">
-        <p className="u-eyebrow">Sent</p>
-        <h3>Thank you</h3>
-        <p>We received your enquiry and will respond with availability and guidance.</p>
-      </div>
-    )
+    const whatsapp = settings.data?.whatsapp?.trim()
+    if (!whatsapp) {
+      setError('WhatsApp number is not set yet. Add it in Manage → Site settings.')
+      return
+    }
+
+    const siteName = settings.data?.site_name ?? 'UGH Appliances'
+    const trimmedName = name.trim()
+    const trimmedMessage = message.trim()
+    if (!trimmedMessage) {
+      setError('Please write a short message.')
+      return
+    }
+
+    const lines = [
+      `Hello ${siteName},`,
+      '',
+      productName
+        ? `I am enquiring about: *${productName}*`
+        : 'I would like to make an enquiry.',
+      productSku ? `SKU: ${productSku}` : null,
+      productSlug ? `Product: ${window.location.origin}/product/${productSlug}` : null,
+      trimmedName ? `My name: ${trimmedName}` : null,
+      '',
+      trimmedMessage,
+    ]
+      .filter((line): line is string => line != null)
+      .join('\n')
+
+    const url = buildWhatsAppUrl(whatsapp, lines)
+    if (!url) {
+      setError('WhatsApp number looks invalid. Use country code, e.g. 923001234567.')
+      return
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -41,42 +68,19 @@ export function EnquiryForm({ productSlug, productName }: EnquiryFormProps) {
       <p className="u-eyebrow">Enquire</p>
       <h3>{productName ? `Ask about ${productName}` : 'Send an enquiry'}</h3>
       <p className="enquiry-form__hint">
-        Showcase catalogue only — no cart. Leave email or phone so we can reach you.
+        Opens WhatsApp with a prefilled message — no cart, just a direct chat.
       </p>
 
       <label className="enquiry-form__field">
-        <span>Name</span>
+        <span>Your name (optional)</span>
         <input
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          required
           autoComplete="name"
+          placeholder="Your name"
         />
       </label>
-
-      <div className="enquiry-form__row">
-        <label className="enquiry-form__field">
-          <span>Email</span>
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-        </label>
-        <label className="enquiry-form__field">
-          <span>Phone</span>
-          <input
-            type="tel"
-            name="phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            autoComplete="tel"
-          />
-        </label>
-      </div>
 
       <label className="enquiry-form__field">
         <span>Message</span>
@@ -89,16 +93,24 @@ export function EnquiryForm({ productSlug, productName }: EnquiryFormProps) {
         />
       </label>
 
-      {mutation.isError ? (
+      {error ? (
         <p className="enquiry-form__error" role="alert">
-          {mutation.error instanceof Error
-            ? mutation.error.message
-            : 'Could not send enquiry. Try again.'}
+          {error}
         </p>
       ) : null}
 
-      <button type="submit" className="btn-ember" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Sending…' : 'Send enquiry'}
+      {!settings.isLoading && !settings.data?.whatsapp ? (
+        <p className="enquiry-form__error" role="status">
+          WhatsApp is not configured. Set the number in Manage → Site settings.
+        </p>
+      ) : null}
+
+      <button
+        type="submit"
+        className="btn-ember"
+        disabled={settings.isLoading || !settings.data?.whatsapp}
+      >
+        Send on WhatsApp
       </button>
     </form>
   )

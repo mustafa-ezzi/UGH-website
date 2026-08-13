@@ -148,7 +148,14 @@ export function AdminSettingsPage() {
           <div className="manage-form__row">
             <label className="manage-field">
               <span>WhatsApp</span>
-              <input value={form.whatsapp ?? ''} onChange={(e) => field('whatsapp', e.target.value)} />
+              <input
+                value={form.whatsapp ?? ''}
+                onChange={(e) => field('whatsapp', e.target.value)}
+                placeholder="923001234567 (with country code)"
+              />
+              <small className="manage-muted">
+                Digits with country code — used for “Send on WhatsApp” enquire buttons.
+              </small>
             </label>
             <label className="manage-field">
               <span>Notify enquiries to</span>
