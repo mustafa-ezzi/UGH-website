@@ -22,7 +22,6 @@ export function Footer() {
           {settings?.tagline ?? 'Precision born from heat.'}
         </p>
         <div className="site-footer__credit">
-          <p>© {new Date().getFullYear()} SAMS Enterprises</p>
           <p>
             Designed by{' '}
             <a

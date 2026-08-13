@@ -4,10 +4,10 @@ import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
 
 const PHOTOS = {
-  hero: '/IMG-20260809-WA0028.jpg',
-  fair: '/IMG-20260809-WA0026.jpg',
-  partnership: '/IMG-20260809-WA0027.jpg',
-  meeting: '/IMG-20260809-WA0029.jpg',
+  hero: '/about-fair-ovens.jpg',
+  partnership: '/about-partnership.jpg',
+  chimney: '/about-chimney.jpg',
+  meeting: '/about-meeting.jpg',
 } as const
 
 export function AboutPage() {
@@ -24,7 +24,7 @@ export function AboutPage() {
         <div className="about-hero__media">
           <img
             src={PHOTOS.hero}
-            alt="UGH Appliances team reviewing kitchen appliances at an international trade fair"
+            alt="Reviewing built-in ovens with partners at an international trade fair"
           />
         </div>
         <div className="about-hero__wash" aria-hidden="true" />
@@ -60,40 +60,40 @@ export function AboutPage() {
       <section className="about-split">
         <Reveal className="about-split__media">
           <img
-            src={PHOTOS.fair}
-            alt="Discussing built-in ovens with partners at a trade exhibition"
+            src={PHOTOS.partnership}
+            alt="Handshake with an international appliance partner at Canton Fair"
             loading="lazy"
           />
         </Reveal>
         <Reveal className="about-split__copy" delay={0.08}>
           <p className="u-eyebrow" style={{ color: 'var(--ugh-ember)' }}>
-            At the fair
-          </p>
-          <h2>Where appliances meet people</h2>
-          <p>
-            On the show floor we stand with makers, compare finishes under real light, and choose
-            what belongs in a serious kitchen — ovens, hobs, chimneys, and the details between.
-          </p>
-        </Reveal>
-      </section>
-
-      <section className="about-band" aria-label="Partnership">
-        <div className="about-band__media">
-          <img
-            src={PHOTOS.partnership}
-            alt="Handshake with an international appliance partner at Canton Fair"
-            loading="lazy"
-          />
-        </div>
-        <div className="about-band__wash" aria-hidden="true" />
-        <Reveal className="about-band__copy u-container">
-          <p className="u-eyebrow" style={{ color: 'var(--ugh-flame)' }}>
             Partnership
           </p>
           <h2>Trust, sealed face to face</h2>
           <p>
             Long relationships start with a handshake in a busy aisle — then become the brands and
             finishes you see in our catalogue.
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="about-band" aria-label="Chimneys and hoods">
+        <div className="about-band__media">
+          <img
+            src={PHOTOS.chimney}
+            alt="Reviewing a kitchen chimney and hob with partners at a trade exhibition"
+            loading="lazy"
+          />
+        </div>
+        <div className="about-band__wash" aria-hidden="true" />
+        <Reveal className="about-band__copy u-container">
+          <p className="u-eyebrow" style={{ color: 'var(--ugh-flame)' }}>
+            At the fair
+          </p>
+          <h2>Where appliances meet people</h2>
+          <p>
+            On the show floor we stand with makers, compare finishes under real light, and choose
+            what belongs in a serious kitchen — ovens, hobs, chimneys, and the details between.
           </p>
         </Reveal>
       </section>
