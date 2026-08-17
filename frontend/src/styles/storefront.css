@@ -272,6 +272,7 @@
 }
 
 .product-grid--mist .product-card__brand,
+.product-grid--mist .product-card__house,
 .product-grid--mist .product-card__view {
   color: var(--ugh-text-muted-light);
 }
@@ -326,11 +327,19 @@
 }
 
 .product-card__brand {
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
-  line-height: 1.35;
+  margin-bottom: 0.15rem;
+}
+
+.product-card__house {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ugh-text-muted-light);
+  margin: 0 0 0.35rem;
+  line-height: 1.4;
 }
 
 .product-card__name {
@@ -527,6 +536,13 @@
   font-size: 1.35rem;
   margin: 0.75rem 0 0.35rem;
   color: var(--ugh-text-on-light);
+}
+
+.product-detail__house {
+  margin: 0.4rem 0 0;
+  font-size: 0.88rem;
+  color: var(--ugh-text-muted-light);
+  line-height: 1.45;
 }
 
 .product-detail__sku {

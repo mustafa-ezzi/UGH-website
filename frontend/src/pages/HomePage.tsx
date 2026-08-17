@@ -16,7 +16,7 @@ const STORY_SLIDES: StorySlide[] = [
     id: 'hob',
     eyebrow: 'Just newly arrived',
     title: 'Perfect hob for perfect cook',
-    body: 'Discover our wide range of built-in hobs from United Gas & Home Appliances.',
+    body: 'Discover our wide range of built-in hobs — each a product of United Gas & Home Appliances.',
     cta: 'Discover more',
     href: '/catalogue/stoves-hobs',
     image:

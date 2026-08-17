@@ -136,7 +136,8 @@ export function ProductPage() {
           </div>
 
           <Reveal className="product-detail__info">
-            <p className="u-eyebrow">{HOUSE_BRAND}</p>
+            <p className="u-eyebrow">{product.brand.name}</p>
+            <p className="product-detail__house">A product of {HOUSE_BRAND}</p>
             <h1 className="page-title page-title--dark">{product.name}</h1>
             <p className="product-detail__price">
               {formatPrice(product.price, product.currency)}
@@ -168,6 +169,7 @@ export function ProductPage() {
             productSlug={product.slug}
             productName={product.name}
             productSku={product.sku || undefined}
+            productBrand={product.brand.name}
           />
         </Reveal>
 

@@ -41,7 +41,8 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         <div className="product-card__body">
-          <p className="product-card__brand">{HOUSE_BRAND}</p>
+          <p className="product-card__brand">{product.brand.name}</p>
+          <p className="product-card__house">A product of {HOUSE_BRAND}</p>
           <h3 className="product-card__name">{product.name}</h3>
           <p className="product-card__price">{formatPrice(product.price, product.currency)}</p>
           <span className="product-card__view">View</span>

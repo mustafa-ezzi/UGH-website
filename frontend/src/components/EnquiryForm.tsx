@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react'
 import { useSettings } from '../api/hooks'
 import { buildWhatsAppUrl } from '../lib/format'
-import { displaySiteName } from '../lib/brand'
+import { brandCredit, displaySiteName } from '../lib/brand'
 
 type EnquiryFormProps = {
   productSlug?: string
   productName?: string
   productSku?: string
+  productBrand?: string
 }
 
 function defaultMessage(productName?: string) {
@@ -16,7 +17,7 @@ function defaultMessage(productName?: string) {
   return 'I would like more information about your appliances — availability and guidance.'
 }
 
-export function EnquiryForm({ productSlug, productName, productSku }: EnquiryFormProps) {
+export function EnquiryForm({ productSlug, productName, productSku, productBrand }: EnquiryFormProps) {
   const settings = useSettings()
   const [name, setName] = useState('')
   const [message, setMessage] = useState(defaultMessage(productName))
@@ -46,6 +47,7 @@ export function EnquiryForm({ productSlug, productName, productSku }: EnquiryFor
       productName
         ? `I am enquiring about: *${productName}*`
         : 'I would like to make an enquiry.',
+      productBrand ? brandCredit(productBrand) : null,
       productSku ? `SKU: ${productSku}` : null,
       productSlug ? `Product: ${window.location.origin}/product/${productSlug}` : null,
       trimmedName ? `My name: ${trimmedName}` : null,
