@@ -9,13 +9,14 @@ import {
 import { ProductCard } from '../components/ProductCard'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
+import { displaySiteName } from '../lib/brand'
 
 const STORY_SLIDES: StorySlide[] = [
   {
     id: 'hob',
     eyebrow: 'Just newly arrived',
     title: 'Perfect hob for perfect cook',
-    body: 'Discover our wide range of built-in hobs from well-known global brands.',
+    body: 'Discover our wide range of built-in hobs from United Gas & Home Appliances.',
     cta: 'Discover more',
     href: '/catalogue/stoves-hobs',
     image:
@@ -53,7 +54,7 @@ const STORY_SLIDES: StorySlide[] = [
   },
   {
     id: 'imagine',
-    eyebrow: 'Just in UGH Appliances',
+    eyebrow: 'Just in United Gas & Home Appliances',
     title: 'Shape your imagination',
     body: 'We will draw your imagination — then help you execute it perfectly.',
     cta: 'Explore catalogue',
@@ -118,7 +119,7 @@ export function HomePage() {
     <>
       {/* 1) Dark cinematic particle hero */}
       <CinematicHero
-        siteName={settings.data?.site_name ?? 'UGH Appliances'}
+        siteName={displaySiteName(settings.data?.site_name)}
         tagline={tagline}
         support={support}
       />

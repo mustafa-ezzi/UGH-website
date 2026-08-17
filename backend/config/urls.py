@@ -4,8 +4,8 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
-admin.site.site_header = "UGH Appliances Admin"
-admin.site.site_title = "UGH Appliances"
+admin.site.site_header = "United Gas & Home Appliances Admin"
+admin.site.site_title = "United Gas & Home Appliances"
 admin.site.index_title = "Catalogue & content"
 
 

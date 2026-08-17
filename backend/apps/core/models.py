@@ -6,7 +6,7 @@ from apps.catalogue.validators import validate_image_file
 class SiteSetting(models.Model):
     """Singleton site-wide copy, contact, and homepage curation."""
 
-    site_name = models.CharField(max_length=120, default="UGH Appliances")
+    site_name = models.CharField(max_length=120, default="United Gas & Home Appliances")
     tagline = models.CharField(
         max_length=200,
         default="Precision born from heat.",

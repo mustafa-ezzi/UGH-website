@@ -19,7 +19,7 @@ type CinematicHeroProps = {
 }
 
 const CHAPTER_COPY = [
-  { eyebrow: 'UGH Appliances', title: 'UGH', body: '' },
+  { eyebrow: 'United Gas & Home Appliances', title: 'UGH', body: '' },
   { eyebrow: 'From dust', title: 'Precision', body: 'born from heat.' },
   { eyebrow: 'Form', title: 'Crafted', body: 'Dust gathers into quiet light.' },
   { eyebrow: 'Material', title: 'Steel & flame', body: 'Brush, heat, and control.' },
@@ -110,7 +110,7 @@ export function CinematicHero({ siteName, tagline, support }: CinematicHeroProps
 
   if (reduced) {
     return (
-      <section className="cinematic-hero cinematic-hero--static" aria-label="UGH Appliances hero">
+      <section className="cinematic-hero cinematic-hero--static" aria-label="United Gas & Home Appliances hero">
         <div className="cinematic-hero__static-bg" aria-hidden="true" />
         <div className="cinematic-hero__overlay cinematic-hero__overlay--static">
           <div className="cinematic-hero__copy">

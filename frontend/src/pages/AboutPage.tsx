@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useSettings } from '../api/hooks'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
+import { displaySiteName, HOUSE_BRAND } from '../lib/brand'
 
 const PHOTOS = {
   hero: '/about-fair-ovens.jpg',
@@ -12,11 +13,11 @@ const PHOTOS = {
 
 export function AboutPage() {
   const settings = useSettings()
-  const siteName = settings.data?.site_name ?? 'UGH Appliances'
+  const siteName = displaySiteName(settings.data?.site_name)
   const tagline = settings.data?.tagline || 'Precision born from heat.'
   const about =
     settings.data?.about_blurb ||
-    'UGH Appliances showcases refined kitchen appliances — catalogue first, enquiry when you are ready.'
+    `${HOUSE_BRAND} showcases refined kitchen appliances — catalogue first, enquiry when you are ready.`
 
   return (
     <div className="about">
@@ -71,7 +72,7 @@ export function AboutPage() {
           </p>
           <h2>Trust, sealed face to face</h2>
           <p>
-            Long relationships start with a handshake in a busy aisle — then become the brands and
+            Long relationships start with a handshake in a busy aisle — then become the pieces and
             finishes you see in our catalogue.
           </p>
         </Reveal>

@@ -326,10 +326,11 @@
 }
 
 .product-card__brand {
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.25rem;
+  line-height: 1.35;
 }
 
 .product-card__name {

@@ -22,7 +22,7 @@ def notify_staff_of_enquiry(sender, instance: Enquiry, created: bool, **kwargs):
         if instance.product_id
         else "Product: (general enquiry)"
     )
-    subject = f"[UGH Appliances] New enquiry from {instance.name}"
+    subject = f"[United Gas & Home Appliances] New enquiry from {instance.name}"
     body = (
         f"Name: {instance.name}\n"
         f"Email: {instance.email or '—'}\n"

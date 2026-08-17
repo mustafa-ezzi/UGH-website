@@ -34,7 +34,7 @@ export function AdminLayout() {
     <div className="manage-shell">
       <aside className="manage-sidebar">
         <div className="manage-brand">
-          <p className="manage-brand__eyebrow">UGH Appliances</p>
+          <p className="manage-brand__eyebrow">United Gas & Home Appliances</p>
           <h1>Manage</h1>
           <p className="manage-brand__sub">Catalogue & content</p>
         </div>

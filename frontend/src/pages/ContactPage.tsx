@@ -3,6 +3,7 @@ import { EnquiryForm } from '../components/EnquiryForm'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
 import { buildWhatsAppUrl } from '../lib/format'
+import { displaySiteName } from '../lib/brand'
 
 export function ContactPage() {
   const settings = useSettings()
@@ -42,7 +43,7 @@ export function ContactPage() {
                     href={
                       buildWhatsAppUrl(
                         settings.data.whatsapp,
-                        `Hello ${settings.data.site_name ?? 'UGH Appliances'}, I would like to make an enquiry.`,
+                        `Hello ${displaySiteName(settings.data.site_name)}, I would like to make an enquiry.`,
                       ) ?? undefined
                     }
                     target="_blank"

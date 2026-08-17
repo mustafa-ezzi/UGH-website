@@ -36,7 +36,7 @@ export function AdminLoginPage() {
     <div className="manage-login">
       <div className="manage-login__glow" aria-hidden="true" />
       <form className="manage-login__card" onSubmit={onSubmit}>
-        <p className="manage-brand__eyebrow">UGH Appliances</p>
+        <p className="manage-brand__eyebrow">United Gas & Home Appliances</p>
         <h1>Staff sign in</h1>
         <p className="manage-login__hint">
           Manage catalogue, enquiries, and homepage content — not visible to shoppers.

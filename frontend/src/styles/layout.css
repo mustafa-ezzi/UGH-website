@@ -27,16 +27,18 @@
 
 .site-header__brand-mark {
   font-family: var(--ugh-font-display);
-  font-size: 1.35rem;
-  letter-spacing: 0.22em;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .site-header__brand-sub {
-  font-size: 0.65rem;
-  letter-spacing: 0.28em;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ugh-text-muted-dark);
+  white-space: nowrap;
 }
 
 .site-header__nav {

@@ -250,7 +250,7 @@ export function AdminProductEditPage() {
           </label>
           <div className="manage-form__row">
             <label className="manage-field">
-              <span>Brand</span>
+              <span>Brand (storefront: United Gas & Home Appliances)</span>
               <select
                 value={form.brand}
                 onChange={(e) => setForm({ ...form, brand: Number(e.target.value) })}

@@ -7,9 +7,15 @@ import {
   updateManageBrand,
   type ManageBrand,
 } from '../api'
+import { HOUSE_BRAND } from '../../lib/brand'
 import { EmptyState, PageHeader } from '../components/PageHeader'
 
-const blank = { name: '', description: '', sort_order: 0, is_active: true }
+const blank = {
+  name: HOUSE_BRAND,
+  description: 'House collection from United Gas & Home Appliances.',
+  sort_order: 0,
+  is_active: true,
+}
 
 export function AdminBrandsPage() {
   const queryClient = useQueryClient()
@@ -63,7 +69,7 @@ export function AdminBrandsPage() {
       <PageHeader
         eyebrow="Taxonomy"
         title="Brands"
-        description="Appliance brands shown on the catalogue and product pages."
+        description="Internal labels only. Shoppers always see products branded as United Gas & Home Appliances."
         actions={
           <button
             type="button"
@@ -127,7 +133,10 @@ export function AdminBrandsPage() {
 
       {brands.isLoading ? <p className="manage-muted">Loading…</p> : null}
       {brands.data && brands.data.length === 0 ? (
-        <EmptyState title="No brands yet" detail="Add Bosch, SMEG, or your house brands." />
+        <EmptyState
+          title="No brands yet"
+          detail="Add United Gas & Home Appliances as the house brand for new products."
+        />
       ) : null}
 
       {brands.data && brands.data.length > 0 ? (

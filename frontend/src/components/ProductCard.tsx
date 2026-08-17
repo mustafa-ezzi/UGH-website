@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Product } from '../api/types'
 import { fetchProduct } from '../api/client'
+import { HOUSE_BRAND, HOUSE_BRAND_SHORT } from '../lib/brand'
 import { formatPrice } from '../lib/format'
 
 type ProductCardProps = {
@@ -35,12 +36,12 @@ export function ProductCard({ product }: ProductCardProps) {
             <img src={image.url} alt={image.alt_text || product.name} loading="lazy" />
           ) : (
             <div className="product-card__placeholder" aria-hidden="true">
-              <span>UGH</span>
+              <span>{HOUSE_BRAND_SHORT}</span>
             </div>
           )}
         </div>
         <div className="product-card__body">
-          <p className="product-card__brand">{product.brand.name}</p>
+          <p className="product-card__brand">{HOUSE_BRAND}</p>
           <h3 className="product-card__name">{product.name}</h3>
           <p className="product-card__price">{formatPrice(product.price, product.currency)}</p>
           <span className="product-card__view">View</span>

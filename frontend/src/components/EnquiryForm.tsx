@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useSettings } from '../api/hooks'
 import { buildWhatsAppUrl } from '../lib/format'
+import { displaySiteName } from '../lib/brand'
 
 type EnquiryFormProps = {
   productSlug?: string
@@ -31,7 +32,7 @@ export function EnquiryForm({ productSlug, productName, productSku }: EnquiryFor
       return
     }
 
-    const siteName = settings.data?.site_name ?? 'UGH Appliances'
+    const siteName = displaySiteName(settings.data?.site_name)
     const trimmedName = name.trim()
     const trimmedMessage = message.trim()
     if (!trimmedMessage) {

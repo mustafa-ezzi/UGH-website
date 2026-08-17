@@ -5,6 +5,7 @@ import { EnquiryForm } from '../components/EnquiryForm'
 import { ProductCard } from '../components/ProductCard'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
+import { HOUSE_BRAND, HOUSE_BRAND_SHORT } from '../lib/brand'
 import { formatPrice } from '../lib/format'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -110,7 +111,7 @@ export function ProductPage() {
                     animate={{ opacity: 1 }}
                     exit={reduce ? undefined : { opacity: 0 }}
                   >
-                    <span>UGH</span>
+                    <span>{HOUSE_BRAND_SHORT}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -135,7 +136,7 @@ export function ProductPage() {
           </div>
 
           <Reveal className="product-detail__info">
-            <p className="u-eyebrow">{product.brand.name}</p>
+            <p className="u-eyebrow">{HOUSE_BRAND}</p>
             <h1 className="page-title page-title--dark">{product.name}</h1>
             <p className="product-detail__price">
               {formatPrice(product.price, product.currency)}

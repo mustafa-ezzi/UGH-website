@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { useBrands, useCategories, useProducts } from '../api/hooks'
+import { useCategories, useProducts } from '../api/hooks'
 import { ProductCard } from '../components/ProductCard'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
@@ -15,7 +15,6 @@ export function CataloguePage() {
   const ordering = searchParams.get('ordering') ?? undefined
 
   const categories = useCategories()
-  const brands = useBrands()
   const products = useProducts({
     category: categorySlug,
     brand,
@@ -82,27 +81,6 @@ export function CataloguePage() {
           </div>
 
           <div className="catalogue-filters__group">
-            <p className="catalogue-filters__label">Brand</p>
-            <button
-              type="button"
-              className={!brand ? 'is-active' : undefined}
-              onClick={() => updateFilter('brand', '')}
-            >
-              All brands
-            </button>
-            {(brands.data ?? []).map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={brand === item.slug ? 'is-active' : undefined}
-                onClick={() => updateFilter('brand', item.slug)}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="catalogue-filters__group">
             <p className="catalogue-filters__label">Sort</p>
             <select
               value={ordering ?? ''}
@@ -125,7 +103,7 @@ export function CataloguePage() {
             </h1>
             <p className="page-lede page-lede--dark">
               {activeCategory?.description ||
-                'Browse stoves, chimneys, ovens, sinks, and hardware. Prices for reference — enquire to purchase.'}
+            'Browse stoves, chimneys, ovens, sinks, and hardware from United Gas & Home Appliances. Prices for reference — enquire to purchase.'}
             </p>
           </Reveal>
 
@@ -140,7 +118,7 @@ export function CataloguePage() {
           ) : (products.data?.results.length ?? 0) === 0 ? (
             <StatusMessage
               title="No products found"
-              detail="Try another category, brand, or search term."
+              detail="Try another category or search term."
             />
           ) : (
             <>

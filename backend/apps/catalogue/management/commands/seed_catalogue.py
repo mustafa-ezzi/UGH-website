@@ -232,13 +232,13 @@ class Command(BaseCommand):
                 updated += 1
 
         settings = SiteSetting.load()
-        settings.site_name = "UGH Appliances"
+        settings.site_name = "United Gas & Home Appliances"
         settings.tagline = "Precision born from heat."
         settings.hero_supporting_text = (
             "Stoves, chimneys, ovens, and basins — crafted for kitchens that mean something."
         )
         settings.about_blurb = (
-            "UGH Appliances showcases refined kitchen appliances — catalogue first, "
+            "United Gas & Home Appliances showcases refined kitchen appliances — catalogue first, "
             "enquiry when you are ready. No cart. No checkout. Just the craft."
         )
         settings.contact_email = "hello@ugh-appliances.local"
