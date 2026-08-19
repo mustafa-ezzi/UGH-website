@@ -14,10 +14,23 @@
   background: #1a1f28;
 }
 
-.cinematic-hero__canvas {
+.cinematic-hero__waves {
   position: absolute;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
+}
+
+.gradient-waves {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cinematic-hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   cursor: crosshair;
   /* Allow vertical page scroll while still receiving horizontal / light touches */
   touch-action: pan-y;
@@ -33,15 +46,14 @@
 .cinematic-hero__fallback {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 35%, rgba(196, 92, 38, 0.2), transparent 55%),
-    #1a1f28;
+  z-index: 1;
+  background: transparent;
 }
 
 .cinematic-hero__vignette {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   /* Lighter wash so gold/ember dust stays readable in the center */
   background:
@@ -53,7 +65,7 @@
 .cinematic-hero__overlay {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;

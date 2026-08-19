@@ -56,13 +56,13 @@ export function HeroScene({ className }: HeroSceneProps) {
         dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.45, 5.4], fov: 42, near: 0.1, far: 40 }}
-        style={{ width: '100%', height: '100%', touchAction: 'pan-y' }}
-        onCreated={({ raycaster }) => {
+        style={{ width: '100%', height: '100%', touchAction: 'pan-y', background: 'transparent' }}
+        onCreated={({ gl, raycaster }) => {
+          gl.setClearColor(0x000000, 0)
           raycaster.params.Points = { threshold: 0.3 }
         }}
       >
-        <color attach="background" args={['#1a1f28']} />
-        <fog attach="fog" args={['#1a1f28', 10, 22]} />
+        <fog attach="fog" args={['#1a1f28', 12, 24]} />
         <Suspense fallback={null}>
           <CameraRig />
           <SceneLights />
