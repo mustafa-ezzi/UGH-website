@@ -1,4 +1,5 @@
 import { lazy, Suspense, useMemo, useRef, useState } from 'react'
+import { ParticleText } from '../scenes/ParticleText'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -168,8 +169,26 @@ export function CinematicHero({ siteName, tagline, support }: CinematicHeroProps
         <div className="cinematic-hero__overlay">
           <div className="cinematic-hero__copy">
             <p className="u-eyebrow cinematic-hero__eyebrow">{copy.eyebrow || siteName}</p>
-            <h1 className="cinematic-hero__title" key={`title-${chapter}`}>
-              {chapter === 0 ? 'UGH' : copy.title}
+            <h1 className="cinematic-hero__title cinematic-hero__title--particle" aria-hidden="true">
+              <ParticleText
+                key={`title-${chapter}`}
+                text={chapter === 0 ? 'UGH' : copy.title}
+                particleSize={2.2}
+                density={3}
+                color="#f5ede0"
+                highlightColor="#e07840"
+                scatter={220}
+                gatherDuration={900}
+                stagger={320}
+                pointerRepel={38}
+                repelRadius={110}
+                idleDrift={0.55}
+                trigger="mount"
+                fontSize="clamp(3.4rem, 11vw, 6.5rem)"
+                fontWeight={600}
+                fontFamily="inherit"
+                glow
+              />
             </h1>
             <p className="cinematic-hero__body" key={`body-${chapter}`}>
               {chapter === 0 ? tagline : copy.body || support}

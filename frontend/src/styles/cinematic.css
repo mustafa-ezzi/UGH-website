@@ -110,6 +110,13 @@
   animation: hero-title-in 0.55s ease;
 }
 
+/* Particle title: give the canvas a fixed height so text sampling has dimensions */
+.cinematic-hero__title--particle {
+  height: clamp(4.2rem, 13vw, 8rem);
+  overflow: visible;
+  animation: none;
+}
+
 .cinematic-hero__body,
 .cinematic-hero__tagline {
   max-width: 36rem;
