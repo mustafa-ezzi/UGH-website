@@ -886,3 +886,92 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Product XLSX import */
+.manage-import-upload code {
+  font-size: 0.82em;
+  color: #e8d5b5;
+}
+
+.manage-import-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.manage-import-toolbar h3 {
+  margin: 0;
+}
+
+.manage-import-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.manage-import-table-wrap {
+  max-height: min(70vh, 40rem);
+}
+
+.manage-import-table {
+  min-width: 68rem;
+}
+
+.manage-import-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.manage-import-table__check {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.manage-import-input {
+  width: 100%;
+  min-width: 6rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--manage-line);
+  border-radius: 0.3rem;
+  background: #1a1714;
+  color: inherit;
+  font: inherit;
+}
+
+.manage-import-input--price {
+  min-width: 5rem;
+  max-width: 7rem;
+}
+
+.manage-import-flag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  margin: 0.15rem 0;
+}
+
+.manage-import-row--off {
+  opacity: 0.45;
+}
+
+.manage-import-row--warn {
+  background: rgba(196, 92, 38, 0.08);
+}
+
+.manage-import-errors {
+  margin: 0 0 0.85rem;
+  padding-left: 1.2rem;
+  color: #f3a48a;
+  font-size: 0.88rem;
+}
+
+.manage-success {
+  color: #b7d7a8;
+  margin: 0 0 0.75rem;
+}

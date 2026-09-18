@@ -8,6 +8,7 @@ import { AdminDashboardPage } from './admin/pages/AdminDashboardPage'
 import { AdminEnquiriesPage } from './admin/pages/AdminEnquiriesPage'
 import { AdminLoginPage } from './admin/pages/AdminLoginPage'
 import { AdminProductEditPage } from './admin/pages/AdminProductEditPage'
+import { AdminProductsImportPage } from './admin/pages/AdminProductsImportPage'
 import { AdminProductsPage } from './admin/pages/AdminProductsPage'
 import { AdminSettingsPage } from './admin/pages/AdminSettingsPage'
 import { Layout } from './components/Layout'
@@ -27,6 +28,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/import" element={<AdminProductsImportPage />} />
             <Route path="products/:id" element={<AdminProductEditPage />} />
             <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="brands" element={<AdminBrandsPage />} />

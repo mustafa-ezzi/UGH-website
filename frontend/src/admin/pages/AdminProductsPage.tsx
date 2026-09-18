@@ -86,9 +86,14 @@ export function AdminProductsPage() {
         title="Products"
         description="Publish, feature, and edit pricing — clients can do this without developer help."
         actions={
-          <Link to="/manage/products/new" className="manage-btn manage-btn--primary">
-            Add product
-          </Link>
+          <>
+            <Link to="/manage/products/import" className="manage-btn">
+              Import XLSX
+            </Link>
+            <Link to="/manage/products/new" className="manage-btn manage-btn--primary">
+              Add product
+            </Link>
+          </>
         }
       />
 

@@ -475,7 +475,7 @@ export function ParticleText({
   return (
     <div
       ref={containerRef}
-      className={`relative block h-full min-h-[2.5em] w-full overflow-visible touch-none ${className}`}
+      className={`relative block h-full w-full overflow-visible touch-none ${className}`}
       style={style}
       aria-label={text}
     >
