@@ -292,22 +292,7 @@
   line-height: 1.25;
   color: #ffffff;
   letter-spacing: -0.02em;
-  /* canvas renders the text; hide the invisible fallback text */
-  text-shadow: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3em;
-  width: min(80rem, 94vw);
-}
-
-/* Each line gets a fixed height so the canvas has dimensions to sample against */
-.kl-fixed-quote__particle-line {
-  width: 100%;
-  height: clamp(2.6rem, 6.4vw, 4.2rem);
-  position: relative;
-  overflow: visible;
-  cursor: default;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
 }
 
 @media (max-width: 900px) {

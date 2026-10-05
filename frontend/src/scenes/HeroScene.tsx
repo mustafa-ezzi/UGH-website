@@ -53,8 +53,8 @@ export function HeroScene({ className }: HeroSceneProps) {
   return (
     <div className={className} aria-hidden="true">
       <Canvas
-        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5)]}
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        dpr={[1, Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.25)]}
+        gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.45, 5.4], fov: 42, near: 0.1, far: 40 }}
         style={{ width: '100%', height: '100%', touchAction: 'pan-y', background: 'transparent' }}
         onCreated={({ gl, raycaster }) => {

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ParticleText } from '../scenes/ParticleText'
 import { useCategories, useCarouselSlides, useProducts, useSettings } from '../api/hooks'
 import { CinematicHero } from '../components/CinematicHero'
 import {
@@ -173,28 +172,12 @@ export function HomePage() {
             }}
           />
           <div className="kl-fixed-quote__wash" />
-          <h2 className="kl-fixed-quote__title" aria-label={quote}>
+          <h2 className="kl-fixed-quote__title">
             {quoteLines.map((line, i) => (
-              <div key={i} className="kl-fixed-quote__particle-line">
-                <ParticleText
-                  text={line}
-                  particleSize={1.8}
-                  density={3}
-                  color="#ffffff"
-                  highlightColor="#e07840"
-                  scatter={160}
-                  gatherDuration={1200}
-                  stagger={380}
-                  pointerRepel={42}
-                  repelRadius={100}
-                  idleDrift={0.5}
-                  trigger="hover"
-                  fontSize="clamp(1.85rem, 4.8vw, 3.1rem)"
-                  fontWeight={600}
-                  fontFamily="inherit"
-                  glow
-                />
-              </div>
+              <span key={i}>
+                {i > 0 ? <br /> : null}
+                {line}
+              </span>
             ))}
           </h2>
         </div>

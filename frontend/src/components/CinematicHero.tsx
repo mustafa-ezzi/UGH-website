@@ -4,8 +4,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { progressToChapter, useHeroProgress } from '../store/heroProgress'
-import { isMobileViewport, prefersReducedMotion } from '../lib/motion'
-import { GradientWaves } from '../scenes/GradientWaves'
+import { prefersReducedMotion } from '../lib/motion'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -136,29 +135,6 @@ export function CinematicHero({ siteName, tagline, support }: CinematicHeroProps
       aria-label="Cinematic introduction"
     >
       <div ref={pinRef} className="cinematic-hero__pin">
-        <GradientWaves
-          className="cinematic-hero__waves"
-          horizonColor="#0e1116"
-          waveColor="#c45c26"
-          crestColor="#e8d5b5"
-          speed={0.28}
-          amplitude={2.1}
-          waveScale={0.55}
-          waveRatio={0.9}
-          swell={32}
-          turbulence={18}
-          tilt={1.11}
-          zoom={1}
-          height={5.5}
-          fogDepth={15}
-          detail={isMobileViewport() ? 'low' : 'medium'}
-          brightness={0.82}
-          opacity={0.8}
-          mouseInteraction
-          parallaxStrength={0.35}
-          grain
-          grainIntensity={0.04}
-        />
         <Suspense fallback={<div className="cinematic-hero__fallback" aria-hidden="true" />}>
           <HeroScene className="cinematic-hero__canvas" />
         </Suspense>

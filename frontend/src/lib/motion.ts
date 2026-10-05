@@ -10,7 +10,7 @@ export function isMobileViewport(): boolean {
 
 export function particleBudget(): number {
   if (prefersReducedMotion()) return 0
-  // Crowded field — mobile still high enough to read as dense dust
-  if (isMobileViewport()) return 4800
-  return 9200
+  // Keep dust readable without dominating CPU/GPU
+  if (isMobileViewport()) return 1600
+  return 3200
 }
