@@ -43,13 +43,13 @@ export function Header() {
           to="/"
           className="site-header__brand"
           onClick={() => setOpen(false)}
-          aria-label="United Gas & Home Appliances home"
+          aria-label="MacSon's Home Appliances home"
         >
           <span className="site-header__brand-mark" aria-hidden="true">
-            United Gas
+            MacSon&apos;s
           </span>
           <span className="site-header__brand-sub" aria-hidden="true">
-            & Home Appliances
+            Home Appliances
           </span>
         </NavLink>
 
