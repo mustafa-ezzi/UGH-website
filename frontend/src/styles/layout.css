@@ -107,41 +107,71 @@
 .site-footer__inner {
   width: min(100% - (var(--ugh-pad) * 2), var(--ugh-max));
   margin-inline: auto;
-  display: grid;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.85rem;
+  text-align: center;
+}
+
+.site-footer__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
 }
 
 .site-footer__brand {
+  margin: 0;
   font-family: var(--ugh-font-display);
-  letter-spacing: 0.2em;
-  font-size: 1.1rem;
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  line-height: 1;
+  /* Offset trailing letter-spacing so the word sits optically centered */
+  padding-left: 0.38em;
+}
+
+.site-footer__house {
+  margin: 0;
+  font-size: clamp(0.72rem, 1.6vw, 0.92rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ugh-text-muted-dark);
 }
 
 .site-footer__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 2rem;
+  justify-content: center;
+  gap: 0.85rem 2.75rem;
   font-size: 0.85rem;
   color: var(--ugh-text-muted-dark);
 }
 
+.site-footer__bottom {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.25rem 2rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--ugh-hairline);
+  text-align: left;
+}
+
 .site-footer__copy {
+  margin: 0;
   font-size: 0.75rem;
   color: var(--ugh-steel);
-  padding-top: 1rem;
-  border-top: 1px solid var(--ugh-hairline);
 }
 
 .site-footer__credit {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem 1.5rem;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--ugh-hairline);
+  margin: 0 0 0 auto;
   font-size: 0.72rem;
   color: var(--ugh-steel);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .site-footer__credit a {
@@ -154,6 +184,17 @@
 
 .site-footer__credit a:hover {
   color: var(--ugh-ember);
+}
+
+@media (max-width: 640px) {
+  .site-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-footer__credit {
+    align-self: flex-end;
+  }
 }
 
 .layout {

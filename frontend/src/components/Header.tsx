@@ -49,7 +49,7 @@ export function Header() {
             MacSon&apos;s
           </span>
           <span className="site-header__brand-sub" aria-hidden="true">
-            Home Appliances
+            Appliances
           </span>
         </NavLink>
 

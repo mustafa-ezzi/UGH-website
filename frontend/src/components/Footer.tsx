@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useSettings } from '../api/hooks'
-import { displaySiteName } from '../lib/brand'
+import { HOUSE_BRAND, displaySiteName } from '../lib/brand'
 
 export function Footer() {
   const { data: settings } = useSettings()
@@ -9,8 +9,12 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <div className="site-footer__brand">{siteName}</div>
-        <div className="site-footer__meta">
+        <div className="site-footer__identity">
+          <p className="site-footer__brand">Macson&apos;s</p>
+          <p className="site-footer__house">A Product By {HOUSE_BRAND}</p>
+        </div>
+
+        <nav className="site-footer__meta" aria-label="Footer">
           <Link to="/catalogue">Catalogue</Link>
           <Link to="/about">About</Link>
           <Link to="/contact">Enquire</Link>
@@ -18,13 +22,14 @@ export function Footer() {
             <a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a>
           ) : null}
           <span>Showcase only — no cart, no checkout</span>
-        </div>
-        <p className="site-footer__copy">
-          © {new Date().getFullYear()} {siteName}.{' '}
-          {settings?.tagline ?? 'Precision born from heat.'}
-        </p>
-        <div className="site-footer__credit">
-          <p>
+        </nav>
+
+        <div className="site-footer__bottom">
+          <p className="site-footer__copy">
+            © {new Date().getFullYear()} {siteName}.{' '}
+            {settings?.tagline ?? 'Precision born from heat.'}
+          </p>
+          <p className="site-footer__credit">
             Designed by{' '}
             <a
               href="https://www.trisitesolutions.com/"

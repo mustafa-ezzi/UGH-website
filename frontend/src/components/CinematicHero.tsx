@@ -19,7 +19,7 @@ type CinematicHeroProps = {
 }
 
 const CHAPTER_COPY = [
-  { eyebrow: 'United Gas & Home Appliances', title: 'UGH', body: '' },
+  { eyebrow: 'United Gas & Home Appliances', title: "Macson's", body: '' },
   { eyebrow: 'From dust', title: 'Precision', body: 'born from heat.' },
   { eyebrow: 'Form', title: 'Crafted', body: 'Dust gathers into quiet light.' },
   { eyebrow: 'Material', title: 'Steel & flame', body: 'Brush, heat, and control.' },
@@ -114,7 +114,7 @@ export function CinematicHero({ siteName, tagline, support }: CinematicHeroProps
         <div className="cinematic-hero__static-bg" aria-hidden="true" />
         <div className="cinematic-hero__overlay cinematic-hero__overlay--static">
           <div className="cinematic-hero__copy">
-            <h1 className="cinematic-hero__title">UGH</h1>
+            <h1 className="cinematic-hero__title cinematic-hero__title--brand">Macson&apos;s</h1>
             <p className="cinematic-hero__tagline">{tagline}</p>
             <p className="cinematic-hero__support">{support}</p>
             <Link to="/catalogue" className="btn-ember cinematic-hero__cta">
@@ -144,9 +144,16 @@ export function CinematicHero({ siteName, tagline, support }: CinematicHeroProps
         <div className="cinematic-hero__overlay">
           <div className="cinematic-hero__copy">
             <p className="u-eyebrow cinematic-hero__eyebrow">{copy.eyebrow || siteName}</p>
-            <h1 className="cinematic-hero__title" key={`title-${chapter}`}>
-              {chapter === 0 ? 'UGH' : copy.title}
-            </h1>
+            {chapter === 0 ? (
+              <>
+                <h1 className="sr-only">Macson&apos;s</h1>
+                <div className="cinematic-hero__title-space" aria-hidden="true" />
+              </>
+            ) : (
+              <h1 className="cinematic-hero__title" key={`title-${chapter}`}>
+                {copy.title}
+              </h1>
+            )}
             <p className="cinematic-hero__body" key={`body-${chapter}`}>
               {chapter === 0 ? tagline : copy.body || support}
             </p>

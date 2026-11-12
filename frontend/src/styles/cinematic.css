@@ -93,8 +93,17 @@
   line-height: 1.05;
   margin: 0 0 1rem;
   color: #ffffff;
-  text-shadow: none;
+  text-shadow:
+    0 0 1px rgba(8, 10, 14, 1),
+    0 1px 2px rgba(8, 10, 14, 0.95),
+    0 0 18px rgba(8, 10, 14, 0.92),
+    0 0 36px rgba(8, 10, 14, 0.75);
   animation: hero-title-in 0.55s ease;
+}
+
+.cinematic-hero__title-space {
+  height: clamp(4.6rem, 16vw, 9rem);
+  margin: 0 0 1rem;
 }
 
 
@@ -109,8 +118,11 @@
   text-transform: uppercase;
   line-height: 1.55;
   min-height: 0;
-  color: rgba(255, 255, 255, 0.88);
-  text-shadow: none;
+  color: #ffffff;
+  text-shadow:
+    0 0 1px rgba(8, 10, 14, 1),
+    0 1px 2px rgba(8, 10, 14, 0.9),
+    0 0 14px rgba(8, 10, 14, 0.85);
   animation: hero-title-in 0.55s ease;
 }
 
