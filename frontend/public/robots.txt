@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /manage
+
+Sitemap: https://www.macsonspk.com/sitemap.xml

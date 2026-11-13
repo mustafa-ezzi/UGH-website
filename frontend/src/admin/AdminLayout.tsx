@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Seo } from '../lib/seo'
 import { logout } from './api'
 import { useAuthStore } from './authStore'
 
@@ -32,6 +33,7 @@ export function AdminLayout() {
 
   return (
     <div className="manage-shell">
+      <Seo title="Manage | Macson's" description="Staff catalogue tools." path="/manage" noindex />
       <aside className="manage-sidebar">
         <div className="manage-brand">
           <p className="manage-brand__eyebrow">United Gas & Home Appliances</p>

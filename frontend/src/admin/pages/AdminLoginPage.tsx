@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { login } from '../api'
 import { useAuthStore } from '../authStore'
+import { Seo } from '../../lib/seo'
 
 export function AdminLoginPage() {
   const token = useAuthStore((s) => s.token)
@@ -34,6 +35,7 @@ export function AdminLoginPage() {
 
   return (
     <div className="manage-login">
+      <Seo title="Staff sign in | Macson's" description="Staff sign in." path="/manage/login" noindex />
       <div className="manage-login__glow" aria-hidden="true" />
       <form className="manage-login__card" onSubmit={onSubmit}>
         <p className="manage-brand__eyebrow">United Gas & Home Appliances</p>

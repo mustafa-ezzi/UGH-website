@@ -6,6 +6,7 @@ import { ProductCard } from '../components/ProductCard'
 import { Reveal } from '../components/Reveal'
 import { StatusMessage } from '../components/StatusMessage'
 import { HOUSE_BRAND, HOUSE_BRAND_SHORT } from '../lib/brand'
+import { Seo } from '../lib/seo'
 import { formatPrice } from '../lib/format'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -45,6 +46,7 @@ export function ProductPage() {
   if (productQuery.isLoading) {
     return (
       <section className="page-shell page-shell--mist">
+        <Seo title="Product | Macson's Home Appliances" path={`/product/${slug ?? ''}`} />
         <div className="u-container">
           <StatusMessage title="Loading product…" />
         </div>
@@ -55,6 +57,11 @@ export function ProductPage() {
   if (productQuery.isError || !product) {
     return (
       <section className="page-shell page-shell--mist">
+        <Seo
+          title="Product not found | Macson's Home Appliances"
+          description="This appliance is not in the Macson's catalogue."
+          path={`/product/${slug ?? ''}`}
+        />
         <div className="u-container">
           <StatusMessage
             tone="error"
@@ -73,6 +80,14 @@ export function ProductPage() {
 
   return (
     <section className="page-shell page-shell--mist">
+      <Seo
+        title={`${product.name} | Macson's Home Appliances`}
+        description={
+          product.short_description ||
+          `${product.name} by ${product.brand.name}, a product of ${HOUSE_BRAND}. Enquire for availability.`
+        }
+        path={`/product/${product.slug}`}
+      />
       <div className="u-container product-detail">
         <nav className="product-detail__crumbs" aria-label="Breadcrumb">
           <Link to="/catalogue">Catalogue</Link>
