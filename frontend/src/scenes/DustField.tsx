@@ -284,6 +284,17 @@ export function DustField({ count }: DustFieldProps) {
       1 - Math.exp(-dt * 10),
     )
 
+    const cam = camera as THREE.PerspectiveCamera
+    const dist = Math.max(0.1, cam.position.length())
+    const visibleH = 2 * Math.tan((cam.fov * Math.PI) / 360) * dist
+    const visibleW = visibleH * Math.max(0.2, cam.aspect)
+    // Authored widths: MACSONS 6.4, UGH 7.2. Shrink so the whole word fits.
+    const fitMac = Math.min(1, (visibleW * 0.86) / 6.4)
+    const fitUgh = Math.min(1, (visibleW * 0.9) / 7.2)
+    const fit = lerp(fitMac, fitUgh, toUgh)
+    const lift = cam.aspect < 0.9 ? visibleH * 0.04 : 0
+    const mat = points.material as THREE.PointsMaterial
+    if (mat) mat.size = 0.02 * Math.min(1, Math.max(fit * 1.35, 0.42))
     const cx = cursorRef.current.x
     const cy = cursorRef.current.y
     const cz = cursorRef.current.z
@@ -297,8 +308,8 @@ export function DustField({ count }: DustFieldProps) {
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
 
-      const wordX = lerp(macsons[i3], ugh[i3], toUgh)
-      const wordY = lerp(macsons[i3 + 1], ugh[i3 + 1], toUgh)
+      const wordX = lerp(macsons[i3], ugh[i3], toUgh) * fit
+      const wordY = lerp(macsons[i3 + 1], ugh[i3 + 1], toUgh) * fit + lift
       const wordZ = lerp(macsons[i3 + 2], ugh[i3 + 2], toUgh)
       const baseX = lerp(wordX, exploded[i3], explodeT)
       const baseY = lerp(wordY, exploded[i3 + 1], explodeT)

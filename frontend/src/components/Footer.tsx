@@ -15,13 +15,17 @@ export function Footer() {
         </div>
 
         <nav className="site-footer__meta" aria-label="Footer">
-          <Link to="/catalogue">Catalogue</Link>
-          <Link to="/about">About</Link>
-          <Link to="/contact">Enquire</Link>
+          <div className="site-footer__links">
+            <Link to="/catalogue">Catalogue</Link>
+            <Link to="/about">About</Link>
+            <Link to="/contact">Enquire</Link>
+          </div>
           {settings?.contact_email ? (
-            <a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a>
+            <a className="site-footer__mail" href={`mailto:${settings.contact_email}`}>
+              {settings.contact_email}
+            </a>
           ) : null}
-          <span>Showcase only — no cart, no checkout</span>
+          <span className="site-footer__note">Showcase only — no cart, no checkout</span>
         </nav>
 
         <div className="site-footer__bottom">

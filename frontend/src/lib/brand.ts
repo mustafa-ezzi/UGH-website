@@ -1,5 +1,5 @@
 /** Parent company every catalogue brand is credited to. */
-export const HOUSE_BRAND = 'United Gas & Home Appliances'
+export const HOUSE_BRAND = 'United Gas and Home Appliances'
 export const HOUSE_BRAND_SHORT = 'UGH'
 
 export function displaySiteName(siteName?: string | null) {

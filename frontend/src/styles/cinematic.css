@@ -102,8 +102,21 @@
 }
 
 .cinematic-hero__title-space {
-  height: clamp(4.6rem, 16vw, 9rem);
+  height: clamp(3.4rem, 11vw, 6.5rem);
   margin: 0 0 1rem;
+}
+
+@media (max-width: 700px) {
+  .cinematic-hero__title-space {
+    height: clamp(2.2rem, 14vw, 3.4rem);
+    margin-bottom: 0.65rem;
+  }
+
+  .cinematic-hero__body,
+  .cinematic-hero__tagline {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+  }
 }
 
 
